@@ -1772,4 +1772,77 @@ button {
   object-fit: cover;
 }
 
+/* --- MOBILE RESPONSIVE LAYOUT (iPhone 16 Pro Max / Mobile / Tablet) --- */
+@media (max-width: 1024px) {
+  .app-container {
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 285px;
+    z-index: 99;
+    transform: translateX(-100%);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .mobile-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 10px;
+    color: var(--text-primary);
+  }
+
+  .main-layout {
+    width: 100vw !important;
+    min-width: 100vw !important;
+    overflow-x: hidden;
+  }
+
+  .topbar {
+    padding: 0 14px !important;
+    height: 64px !important;
+  }
+
+  .breadcrumb {
+    font-size: 0.8rem !important;
+  }
+
+  .content-wrapper {
+    padding: 12px !important;
+  }
+
+  .content-banner {
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .banner-title-group h2 {
+    font-size: 1.15rem !important;
+  }
+
+  .preview-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .table-responsive-wrapper {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+
 
