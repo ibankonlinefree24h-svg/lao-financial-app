@@ -20,9 +20,9 @@ import {
   BarChart3,
   Bot,
   Building2,
-  CreditCard,
-  Banknote,
-  PieChart
+  Calendar,
+  PieChart,
+  Target
 } from 'lucide-react';
 import { calculateSmartFinancialBudget } from '../data/mockIncomeExpenses';
 import ReceiptModal from './ReceiptModal';
@@ -40,7 +40,6 @@ export default function IncomeExpenseView({
   const [selectedSlipUrl, setSelectedSlipUrl] = useState(null);
   const [activeReceiptTx, setActiveReceiptTx] = useState(null);
   const [isEditingRate, setIsEditingRate] = useState(false);
-  const [activeTab, setActiveTab] = useState('TRANSACTIONS'); // 'TRANSACTIONS' or 'ANALYTICS'
 
   const [selectedYear, setSelectedYear] = useState('2026');
   const [usdRate, setUsdRate] = useState(22500);
@@ -55,7 +54,7 @@ export default function IncomeExpenseView({
     return amount;
   };
 
-  // Full 12-Month Multi-Year Graphic Enterprise Dataset
+  // Full 12-Month Multi-Year Graphic Dataset (2026, 2025, 2024)
   const yearlyAnalyticsData = {
     '2026': [
       { month: 'ມັງກອນ', income: 14500000, expense: 4200000, profit: 10300000, growth: '+12.5%' },
@@ -74,16 +73,32 @@ export default function IncomeExpenseView({
     '2025': [
       { month: 'ມັງກອນ', income: 9200000, expense: 3100000, profit: 6100000, growth: '+6.2%' },
       { month: 'ກຸມພາ', income: 10400000, expense: 3300000, profit: 7100000, growth: '+13.0%' },
-      { month: 'ສິງຫາ', income: 16500000, expense: 4400000, profit: 12100000, growth: '+18.2%' }
+      { month: 'ມີນາ', income: 11200000, expense: 3500000, profit: 7700000, growth: '+7.6%' },
+      { month: 'ເມສາ', income: 12800000, expense: 3800000, profit: 9000000, growth: '+14.2%' },
+      { month: 'ພຶດສະພາ', income: 11900000, expense: 4100000, profit: 7800000, growth: '-7.0%' },
+      { month: 'ມິຖຸນາ', income: 13500000, expense: 3900000, profit: 9600000, growth: '+13.4%' },
+      { month: 'ກໍລະກົດ', income: 14800000, expense: 4200000, profit: 10600000, growth: '+9.6%' },
+      { month: 'ສິງຫາ', income: 16500000, expense: 4400000, profit: 12100000, growth: '+11.4%' },
+      { month: 'ກັນຍາ', income: 15200000, expense: 4300000, profit: 10900000, growth: '-7.8%' },
+      { month: 'ຕຸລາ', income: 16900000, expense: 4500000, profit: 12400000, growth: '+11.1%' },
+      { month: 'ພະຈິກ', income: 17800000, expense: 4600000, profit: 13200000, growth: '+5.3%' },
+      { month: 'ທັນວາ', income: 19500000, expense: 4800000, profit: 14700000, growth: '+9.5%' }
     ]
   };
 
   const currentYearData = yearlyAnalyticsData[selectedYear] || yearlyAnalyticsData['2026'];
 
   let peakIncomeMonth = currentYearData[0];
+  let peakExpenseMonth = currentYearData[0];
+
   currentYearData.forEach((item) => {
     if (item.income > peakIncomeMonth.income) peakIncomeMonth = item;
+    if (item.expense > peakExpenseMonth.expense) peakExpenseMonth = item;
   });
+
+  const totalYearIncome = currentYearData.reduce((acc, curr) => acc + curr.income, 0);
+  const totalYearExpense = currentYearData.reduce((acc, curr) => acc + curr.expense, 0);
+  const totalYearProfit = totalYearIncome - totalYearExpense;
 
   // Calculate totals from live transactions
   let totalIncomeLAK = 0;
@@ -111,7 +126,6 @@ export default function IncomeExpenseView({
   ];
 
   const totalBankLiquidity = bankBalances.reduce((sum, b) => sum + b.balance, 0);
-
   const smartBudget = calculateSmartFinancialBudget(netProfitLAK, totalIncomeLAK);
 
   const filteredTransactions = transactions.filter((tx) => {
@@ -133,9 +147,9 @@ export default function IncomeExpenseView({
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* 1. Multi-Currency 3-Way Exchange Rate Engine Banner */}
-      <div className="exchange-rate-banner" style={{ marginBottom: '20px' }}>
+      <div className="exchange-rate-banner">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <RefreshCw size={18} color="var(--accent-purple)" />
           <span style={{ fontWeight: 600, fontSize: '0.88rem' }}>
@@ -176,8 +190,8 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 2. Key Financial Cards (Income, Expense, Net Profit, Total Liquidity) */}
-      <div className="preview-grid" style={{ marginBottom: '24px' }}>
+      {/* 2. Key Financial Cards (Income, Expense, Net Profit) */}
+      <div className="preview-grid" style={{ margin: 0 }}>
         <div className="glass-panel kpi-card">
           <div className="kpi-info">
             <p>🟢 ລາຍຮັບລວມ (Total Income LAK Eq.)</p>
@@ -218,8 +232,111 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 3. Bank Account Balances & Office Cash Vault */}
-      <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px' }}>
+      {/* 3. 🌟 MAIN FEATURE: 12-MONTH GRAPHIC BAR CHART & YEARLY ANALYTICS */}
+      <div className="glass-panel" style={{ padding: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <BarChart3 size={28} color="#34d399" />
+            <div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                📊 ກຣາຟຟິກລາຍຮັບ-ລາຍຈ່າຍ ຄົບ 12 ເດືອນ (ປີ {selectedYear})
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                ວິເຄາະເດືອນໃດລາຍຮັບ/ລາຍຈ່າຍສູງ, ເຕີບໂຕ MoM %, ແລະ ປຽບທຽບແຕ່ລະປີ
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '16px', fontSize: '0.82rem', fontWeight: 700 }}>
+              <span style={{ color: '#34d399', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '10px', height: '10px', background: '#10b981', borderRadius: '2px', display: 'inline-block' }} /> 🟢 ລາຍຮັບ
+              </span>
+              <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '10px', height: '10px', background: '#ef4444', borderRadius: '2px', display: 'inline-block' }} /> 🔴 ລາຍຈ່າຍ
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '4px 10px', borderRadius: '8px' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ເລືອກປີ:</span>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.88rem', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', fontWeight: 700 }}
+              >
+                <option value="2026">ປີ 2026 (ປະຈຸບັນ)</option>
+                <option value="2025">ປີ 2025</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Graphic Bar Visualizer */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '300px', padding: '24px 16px 16px', background: 'rgba(0,0,0,0.3)', borderRadius: '14px', gap: '8px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
+          {currentYearData.map((d, i) => {
+            const incomeHeightPercent = Math.max(8, Math.round((d.income / 40000000) * 100));
+            const expenseHeightPercent = Math.max(8, Math.round((d.expense / 40000000) * 100));
+
+            return (
+              <div key={i} style={{ flex: 1, minWidth: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                {/* Growth Tag */}
+                <span style={{ fontSize: '0.7rem', color: d.growth.startsWith('+') ? '#34d399' : '#f87171', fontWeight: 800, marginBottom: '6px' }}>
+                  {d.growth}
+                </span>
+
+                {/* Bars Pair Container */}
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-end', height: '210px', width: '100%', justifyContent: 'center' }}>
+                  {/* Income Bar */}
+                  <div
+                    style={{
+                      width: '42%',
+                      background: 'linear-gradient(180deg, #34d399, #059669)',
+                      height: `${incomeHeightPercent}%`,
+                      borderRadius: '4px 4px 0 0',
+                      boxShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+                      transition: 'height 0.4s ease'
+                    }}
+                    title={`${d.month}: ລາຍຮັບ ₭ ${d.income.toLocaleString()}`}
+                  />
+                  {/* Expense Bar */}
+                  <div
+                    style={{
+                      width: '42%',
+                      background: 'linear-gradient(180deg, #f87171, #dc2626)',
+                      height: `${expenseHeightPercent}%`,
+                      borderRadius: '4px 4px 0 0',
+                      boxShadow: '0 0 10px rgba(239, 68, 68, 0.3)',
+                      transition: 'height 0.4s ease'
+                    }}
+                    title={`${d.month}: ລາຍຈ່າຍ ₭ ${d.expense.toLocaleString()}`}
+                  />
+                </div>
+
+                {/* Month Name */}
+                <span style={{ fontSize: '0.75rem', marginTop: '10px', color: 'var(--text-primary)', fontWeight: 700, textAlign: 'center' }}>
+                  {d.month}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Yearly Summary Analysis Banner */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', padding: '14px 18px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '12px' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            🏆 <strong>ເດືອນລາຍຮັບສູງສຸດ:</strong> {peakIncomeMonth.month} (₭ {peakIncomeMonth.income.toLocaleString()})
+          </span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            🔴 <strong>ເດືອນລາຍຈ່າຍສູງສຸດ:</strong> {peakExpenseMonth.month} (₭ {peakExpenseMonth.expense.toLocaleString()})
+          </span>
+          <span style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 700 }}>
+            💰 ກຳໄລລວມທັງໝົດປີ {selectedYear}: ₭ {totalYearProfit.toLocaleString()}
+          </span>
+        </div>
+      </div>
+
+      {/* 4. Bank Balances & Office Cash Vault */}
+      <div className="glass-panel" style={{ padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Building2 size={22} color="var(--accent-purple)" />
@@ -244,252 +361,152 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 4. Sub-Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', flexWrap: 'wrap' }}>
-        <button
-          className={`filter-pill-btn ${activeTab === 'TRANSACTIONS' ? 'active' : ''}`}
-          onClick={() => setActiveTab('TRANSACTIONS')}
-          style={{ padding: '8px 18px', fontSize: '0.9rem' }}
-        >
-          💳 ລາຍການລາຍຮັບ-ລາຍຈ່າຍ ({transactions.length})
-        </button>
+      {/* 5. Live Transactions Table & Controls */}
+      <div className="glass-panel" style={{ padding: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button className="btn-primary-emerald" onClick={() => onAddTransaction('INCOME')}>
+              <PlusCircle size={18} /> + ບັນທຶກລາຍຮັບ (AI Slip Reader)
+            </button>
+            <button
+              style={{
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '12px',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 15px rgba(239, 68, 68, 0.35)'
+              }}
+              onClick={() => onAddTransaction('EXPENSE')}
+            >
+              <MinusCircle size={18} /> - ບັນທຶກລາຍຈ່າຍ
+            </button>
+          </div>
 
-        <button
-          className={`filter-pill-btn ${activeTab === 'ANALYTICS' ? 'active' : ''}`}
-          onClick={() => setActiveTab('ANALYTICS')}
-          style={{ padding: '8px 18px', fontSize: '0.9rem' }}
-        >
-          📊 ກຣາຟຟິກ 12 ເດືອນ & AI Analytics
-        </button>
-      </div>
-
-      {/* TAB 1: TRANSACTIONS VIEW */}
-      {activeTab === 'TRANSACTIONS' && (
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button className="btn-primary-emerald" onClick={() => onAddTransaction('INCOME')}>
-                <PlusCircle size={18} /> + ບັນທຶກລາຍຮັບ (AI Slip Reader)
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="filter-pill-buttons">
+              <button
+                className={`filter-pill-btn ${activeTypeFilter === 'ALL' ? 'active' : ''}`}
+                onClick={() => setActiveTypeFilter('ALL')}
+              >
+                ທັງໝົດ ({transactions.length})
               </button>
               <button
-                style={{
-                  background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '12px',
-                  fontWeight: 600,
-                  fontSize: '0.9rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 15px rgba(239, 68, 68, 0.35)'
-                }}
-                onClick={() => onAddTransaction('EXPENSE')}
+                className={`filter-pill-btn ${activeTypeFilter === 'INCOME' ? 'active' : ''}`}
+                onClick={() => setActiveTypeFilter('INCOME')}
+                style={activeTypeFilter === 'INCOME' ? { background: '#10b981', borderColor: '#10b981' } : {}}
               >
-                <MinusCircle size={18} /> - ບັນທຶກລາຍຈ່າຍ
+                🟢 ລາຍຮັບ
+              </button>
+              <button
+                className={`filter-pill-btn ${activeTypeFilter === 'EXPENSE' ? 'active' : ''}`}
+                onClick={() => setActiveTypeFilter('EXPENSE')}
+                style={activeTypeFilter === 'EXPENSE' ? { background: '#ef4444', borderColor: '#ef4444' } : {}}
+              >
+                🔴 ລາຍຈ່າຍ
               </button>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div className="filter-pill-buttons">
-                <button
-                  className={`filter-pill-btn ${activeTypeFilter === 'ALL' ? 'active' : ''}`}
-                  onClick={() => setActiveTypeFilter('ALL')}
-                >
-                  ທັງໝົດ ({transactions.length})
-                </button>
-                <button
-                  className={`filter-pill-btn ${activeTypeFilter === 'INCOME' ? 'active' : ''}`}
-                  onClick={() => setActiveTypeFilter('INCOME')}
-                  style={activeTypeFilter === 'INCOME' ? { background: '#10b981', borderColor: '#10b981' } : {}}
-                >
-                  🟢 ລາຍຮັບ
-                </button>
-                <button
-                  className={`filter-pill-btn ${activeTypeFilter === 'EXPENSE' ? 'active' : ''}`}
-                  onClick={() => setActiveTypeFilter('EXPENSE')}
-                  style={activeTypeFilter === 'EXPENSE' ? { background: '#ef4444', borderColor: '#ef4444' } : {}}
-                >
-                  🔴 ລາຍຈ່າຍ
-                </button>
-              </div>
-
-              <div className="search-bar-gold" style={{ width: '220px' }}>
-                <Search size={16} color="var(--text-muted)" />
-                <input
-                  type="text"
-                  placeholder="ຄົ້ນຫາລາຍຮັບ-ລາຍຈ່າຍ..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+            <div className="search-bar-gold" style={{ width: '220px' }}>
+              <Search size={16} color="var(--text-muted)" />
+              <input
+                type="text"
+                placeholder="ຄົ້ນຫາລາຍຮັບ-ລາຍຈ່າຍ..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
+        </div>
 
-          <div className="table-responsive-wrapper" style={{ marginTop: '24px' }}>
-            <table className="customer-full-table">
-              <thead>
-                <tr>
-                  <th>ວັນທີ</th>
-                  <th>ປະເພດ</th>
-                  <th>ໝວດໝູ່</th>
-                  <th>ຜູ້ຈ່າຍ / ຜູ້ຮັບ / ລູກຄ້າ</th>
-                  <th>ສະກຸນເງິນ & ຈຳນວນເດີມ</th>
-                  <th>ຈຳນວນເງິນລວມເປັນກີບ</th>
-                  <th>ຮູບແບບ / ໃບສຳຄັນ</th>
-                  <th>ໝາຍເຫດ</th>
-                  <th>ຈັດການ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTransactions.map((tx) => {
-                  const isIncome = tx.type === 'INCOME';
-                  const convertedLAK = convert3ToLAK(tx.amount, tx.currency);
+        <div className="table-responsive-wrapper" style={{ marginTop: '24px' }}>
+          <table className="customer-full-table">
+            <thead>
+              <tr>
+                <th>ວັນທີ</th>
+                <th>ປະເພດ</th>
+                <th>ໝວດໝູ່</th>
+                <th>ຜູ້ຈ່າຍ / ຜູ້ຮັບ / ລູກຄ້າ</th>
+                <th>ສະກຸນເງິນ & ຈຳນວນເດີມ</th>
+                <th>ຈຳນວນເງິນລວມເປັນກີບ</th>
+                <th>ຮູບແບບ / ໃບສຳຄັນ</th>
+                <th>ໝາຍເຫດ</th>
+                <th>ຈັດການ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTransactions.map((tx) => {
+                const isIncome = tx.type === 'INCOME';
+                const convertedLAK = convert3ToLAK(tx.amount, tx.currency);
 
-                  return (
-                    <tr key={tx.id}>
-                      <td>{tx.date}</td>
+                return (
+                  <tr key={tx.id}>
+                    <td>{tx.date}</td>
 
-                      <td>
-                        <span className={`status-badge-pill ${isIncome ? 'green' : 'red'}`}>
-                          {isIncome ? '🟢 ລາຍຮັບ' : '🔴 ລາຍຈ່າຍ'}
-                        </span>
-                      </td>
+                    <td>
+                      <span className={`status-badge-pill ${isIncome ? 'green' : 'red'}`}>
+                        {isIncome ? '🟢 ລາຍຮັບ' : '🔴 ລາຍຈ່າຍ'}
+                      </span>
+                    </td>
 
-                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{tx.category}</td>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{tx.category}</td>
 
-                      <td>{tx.customerName || '-'}</td>
+                    <td>{tx.customerName || '-'}</td>
 
-                      <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
-                        {tx.currency === 'LAK'
-                          ? `₭ ${tx.amount.toLocaleString()}`
-                          : tx.currency === 'RUB'
-                          ? `${tx.amount.toLocaleString()} RUB`
-                          : `$ ${tx.amount.toLocaleString()}`}
-                      </td>
+                    <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
+                      {tx.currency === 'LAK'
+                        ? `₭ ${tx.amount.toLocaleString()}`
+                        : tx.currency === 'RUB'
+                        ? `${tx.amount.toLocaleString()} RUB`
+                        : `$ ${tx.amount.toLocaleString()}`}
+                    </td>
 
-                      <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
-                        ₭ {convertedLAK.toLocaleString()}
-                      </td>
+                    <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
+                      ₭ {convertedLAK.toLocaleString()}
+                    </td>
 
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          {tx.paymentMethod === 'TRANSFER' ? (
-                            <span className="tag tag-blue" style={{ fontSize: '0.75rem' }}>
-                              💳 ໂອນ
-                            </span>
-                          ) : (
-                            <span className="tag tag-amber" style={{ fontSize: '0.75rem' }}>
-                              💵 ເງິນສົດ
-                            </span>
-                          )}
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {tx.paymentMethod === 'TRANSFER' ? (
+                          <span className="tag tag-blue" style={{ fontSize: '0.75rem' }}>
+                            💳 ໂອນ
+                          </span>
+                        ) : (
+                          <span className="tag tag-amber" style={{ fontSize: '0.75rem' }}>
+                            💵 ເງິນສົດ
+                          </span>
+                        )}
 
-                          <button className="table-link-btn" onClick={() => setActiveReceiptTx(tx)} title="ພິມໃບສຳຄັນຮັບ-ຈ່າຍ">
-                            <Printer size={13} /> ໃບສຳຄັນ
-                          </button>
-
-                          {tx.slipUrl && (
-                            <button className="table-link-btn" onClick={() => setSelectedSlipUrl(tx.slipUrl)} title="ເບິ່ງສະລິບການໂອນເງິນ">
-                              <ImageIcon size={13} /> ສະລິບ
-                            </button>
-                          )}
-                        </div>
-                      </td>
-
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{tx.note || '-'}</td>
-
-                      <td>
-                        <button className="icon-btn-xs" style={{ color: '#f87171' }} onClick={() => onDeleteTransaction(tx.id)} title="ລຶບລາຍການ">
-                          <X size={15} />
+                        <button className="table-link-btn" onClick={() => setActiveReceiptTx(tx)} title="ພິມໃບສຳຄັນຮັບ-ຈ່າຍ">
+                          <Printer size={13} /> ໃບສຳຄັນ
                         </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+
+                        {tx.slipUrl && (
+                          <button className="table-link-btn" onClick={() => setSelectedSlipUrl(tx.slipUrl)} title="ເບິ່ງສະລິບການໂອນເງິນ">
+                            <ImageIcon size={13} /> ສະລິບ
+                          </button>
+                        )}
+                      </div>
+                    </td>
+
+                    <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{tx.note || '-'}</td>
+
+                    <td>
+                      <button className="icon-btn-xs" style={{ color: '#f87171' }} onClick={() => onDeleteTransaction(tx.id)} title="ລຶບລາຍການ">
+                        <X size={15} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      )}
-
-      {/* TAB 2: 12-MONTH GRAPHICS & AI FINANCIAL ANALYTICS */}
-      {activeTab === 'ANALYTICS' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <BarChart3 size={24} color="var(--accent-cyan)" />
-                <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>📊 ກຣາຟຟິກລາຍຮັບ-ລາຍຈ່າຍ ຄົບ 12 ເດືອນ (ປີ {selectedYear})</h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ວິເຄາະເດືອນໃດລາຍຮັບ/ລາຍຈ່າຍສູງ ແລະ ອັດຕາການເຕີບໂຕ MoM %</p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ເລືອກປີ:</span>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '0.88rem', background: 'var(--surface-color)', color: 'var(--text-primary)' }}
-                >
-                  <option value="2026">ປີ 2026 (ປະຈຸບັນ)</option>
-                  <option value="2025">ປີ 2025</option>
-                </select>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '280px', padding: '20px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', gap: '8px', overflowX: 'auto' }}>
-              {currentYearData.map((d, i) => (
-                <div key={i} style={{ flex: 1, minWidth: '55px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
-                  <span style={{ fontSize: '0.68rem', color: d.growth.startsWith('+') ? '#34d399' : '#f87171', fontWeight: 700, marginBottom: '4px' }}>
-                    {d.growth}
-                  </span>
-
-                  <div style={{ display: 'flex', gap: '3px', alignItems: 'flex-end', height: '190px', width: '100%', justifyContent: 'center' }}>
-                    <div style={{ width: '40%', background: '#10b981', height: `${(d.income / 40000000) * 100}%`, borderRadius: '3px 3px 0 0' }} title={`ລາຍຮັບ: ₭ ${d.income.toLocaleString()}`} />
-                    <div style={{ width: '40%', background: '#ef4444', height: `${(d.expense / 40000000) * 100}%`, borderRadius: '3px 3px 0 0' }} title={`ລາຍຈ່າຍ: ₭ ${d.expense.toLocaleString()}`} />
-                  </div>
-                  <span style={{ fontSize: '0.72rem', marginTop: '8px', color: 'var(--text-secondary)', fontWeight: 600, textAlign: 'center' }}>{d.month}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* AI Executive Summary & Smart Budget Allocator */}
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              <Bot size={24} color="#c084fc" />
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>🤖 AI ລາຍງານວິເຄາະການເງິນ & ການຈັດສັນເງິນກຳໄລ (Smart Budget Allocator)</h3>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-              <div className="glass-panel" style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.08)', borderLeft: '4px solid #10b981' }}>
-                <h4 style={{ color: '#34d399', fontSize: '0.92rem', margin: '0 0 6px', fontWeight: 700 }}>
-                  📈 1. ຄັງໝູນວຽນສິນເຊື່ອ (Re-investment 45%)
-                </h4>
-                <h3 style={{ fontSize: '1.2rem', color: '#34d399', margin: '4px 0 2px' }}>₭ {smartBudget.reinvestmentCapital.toLocaleString()}</h3>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ຈັດສັນເພີ່ມຍອດສິນເຊື່ອ LAK/RUB ໃຫ້ລູກຄ້າໃໝ່</span>
-              </div>
-
-              <div className="glass-panel" style={{ padding: '16px', background: 'rgba(99, 102, 241, 0.08)', borderLeft: '4px solid #6366f1' }}>
-                <h4 style={{ color: '#818cf8', fontSize: '0.92rem', margin: '0 0 6px', fontWeight: 700 }}>
-                  🏢 2. ຄ່າໃຊ້ຈ່າຍບໍລິຫານ (Operating Expenses 35%)
-                </h4>
-                <h3 style={{ fontSize: '1.2rem', color: '#818cf8', margin: '4px 0 2px' }}>₭ {smartBudget.operatingExpense.toLocaleString()}</h3>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}> Ads ໂຄສະນາ, ເງິນເດືອນ, IT Server</span>
-              </div>
-
-              <div className="glass-panel" style={{ padding: '16px', background: 'rgba(245, 158, 11, 0.08)', borderLeft: '4px solid #f59e0b' }}>
-                <h4 style={{ color: '#fbbf24', fontSize: '0.92rem', margin: '0 0 6px', fontWeight: 700 }}>
-                  🛡️ 3. ຄັງສຳຮອງສຸກເສີນ & ໜີ້ເສຍ (Emergency Reserve 20%)
-                </h4>
-                <h3 style={{ fontSize: '1.2rem', color: '#fbbf24', margin: '4px 0 2px' }}>₭ {smartBudget.emergencyReserve.toLocaleString()}</h3>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ຄັງສຳຮອງປ້ອງກັນ NPL ແລະ ສະພາບຄ່ອງອົງກອນ</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Official Receipt / Voucher Print Modal */}
       {activeReceiptTx && (
