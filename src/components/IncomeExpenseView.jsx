@@ -334,7 +334,7 @@ export default function IncomeExpenseView({
             <p>🟢 ລາຍຮັບລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 - 2026)</p>
             <h3 style={{ color: '#34d399', fontSize: '1.5rem', fontWeight: 800 }}>₭ {allTimeSummary.totalIncomeLAK.toLocaleString()}</h3>
             <span style={{ fontSize: '0.8rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', fontWeight: 600 }}>
-              <ArrowUpRight size={15} /> ດອກເບ້ຍສິນເຊື່ອ + ຄ່າທຳນຽມ
+              <ArrowUpRight size={15} /> ດອກເບ້ຍສິນເຊື່ອ (Loan Interest Revenue)
             </span>
           </div>
           <div className="kpi-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', borderRadius: '14px' }}>
@@ -475,7 +475,7 @@ export default function IncomeExpenseView({
                   📑 ຕາຕະລາງລາຍລະອຽດ ລາຍຮັບ-ລາຍຈ່າຍ ຄົບ 24 ເດືອນ (2025 - 2026)
                 </h3>
                 <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-                  ແຍກລາຍລະອຽດດອກເບ້ຍ, ຄ່າທຳນຽມ, ຄ່າ Ads, ເງິນເດືອນ, ຄ່າເຊົ່າ, ກຳໄລສຸດທິ, % ກຳໄລ ແລະ % MoM
+                  ແຍກລາຍລະອຽດດອກເບ້ຍສິນເຊື່ອ, ຄ່າ Ads, ເງິນເດືອນ, ຄ່າເຊົ່າ, ກຳໄລສຸດທິ, % ກຳໄລ ແລະ % MoM
                 </p>
               </div>
             </div>
@@ -495,7 +495,6 @@ export default function IncomeExpenseView({
                 <tr>
                   <th style={{ minWidth: '110px' }}>ເດືອນ/ປີ</th>
                   <th style={{ color: '#34d399' }}>🟢 ດອກເບ້ຍສິນເຊື່ອ</th>
-                  <th style={{ color: '#38bdf8' }}>🟢 ຄ່າທຳນຽມ</th>
                   <th style={{ color: '#10b981', fontWeight: 800 }}>🟢 ລາຍຮັບລວມ</th>
                   <th style={{ color: '#f87171' }}>🔴 ຄ່າ Ads ໂຄສະນາ</th>
                   <th style={{ color: '#fb7185' }}>🔴 ເງິນເດືອນ</th>
@@ -516,7 +515,6 @@ export default function IncomeExpenseView({
                         {m.month}
                       </td>
                       <td style={{ color: '#34d399', fontWeight: 600 }}>₭ {m.interestIncome.toLocaleString()}</td>
-                      <td style={{ color: '#38bdf8', fontWeight: 600 }}>₭ {m.feeIncome.toLocaleString()}</td>
                       <td style={{ color: '#10b981', fontWeight: 800 }}>₭ {m.income.toLocaleString()}</td>
                       <td style={{ color: '#f87171' }}>₭ {m.adsExpense.toLocaleString()}</td>
                       <td style={{ color: '#fb7185' }}>₭ {m.salaryExpense.toLocaleString()}</td>
