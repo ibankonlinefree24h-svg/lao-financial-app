@@ -455,7 +455,77 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 5. Sleek Categorized Sub-Tab Navigation Bar */}
+      {/* 🌟 5. YEAR-BY-YEAR PERFORMANCE COMPARISON PANEL (2025 VS 2026 YoY) */}
+      <div className="glass-panel" style={{ padding: '22px 26px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Layers size={26} color="#818cf8" />
+            <div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                📊 ການປຽບທຽບຜົນງານແຕ່ລະປີ (Year-by-Year YoY Comparison: 2025 vs 2026)
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                ປຽບທຽບລາຍຮັບ, ລາຍຈ່າຍ, ກຳໄລ, ແລະ ຈຳນວນສັນຍາສິນເຊື່ອຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ
+              </p>
+            </div>
+          </div>
+
+          <span className="tag tag-purple" style={{ fontSize: '0.85rem', padding: '6px 14px' }}>
+            🏆 110 ສັນຍາສິນເຊື່ອລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ ({allTimeSummary.totalLoansIssued} ຜົນງານ)
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+          {/* 2025 Card */}
+          <div className="glass-panel" style={{ padding: '18px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #38bdf8', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#38bdf8' }}>🔷 ປີກໍ່ຕັ້ງ (2025)</span>
+              <span className="tag tag-blue" style={{ fontSize: '0.78rem' }}>54 ສັນຍາສິນເຊື່ອ</span>
+            </div>
+            <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>ລາຍຮັບລວມ 2025:</span>
+                <strong style={{ color: '#34d399' }}>₭ 182,400,000</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>ລາຍຈ່າຍລວມ 2025:</span>
+                <strong style={{ color: '#f87171' }}>₭ 49,600,000</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', fontWeight: 800, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '6px' }}>
+                <span style={{ color: 'var(--text-primary)' }}>ກຳໄລສຸດທິ 2025:</span>
+                <strong style={{ color: '#38bdf8' }}>₭ 132,800,000 (72.8%)</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* 2026 Card */}
+          <div className="glass-panel" style={{ padding: '18px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #34d399', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#34d399' }}>🟢 ປີປະຈຸບັນ (2026)</span>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span className="tag tag-emerald" style={{ fontSize: '0.78rem' }}>+58.2% 📈 YoY</span>
+                <span className="tag tag-emerald" style={{ fontSize: '0.78rem' }}>56 ສັນຍາ</span>
+              </div>
+            </div>
+            <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>ລາຍຮັບລວມ 2026:</span>
+                <strong style={{ color: '#34d399' }}>₭ 288,600,000</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>ລາຍຈ່າຍລວມ 2026:</span>
+                <strong style={{ color: '#f87171' }}>₭ 63,200,000</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', fontWeight: 800, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '6px' }}>
+                <span style={{ color: 'var(--text-primary)' }}>ກຳໄລສຸດທິ 2026:</span>
+                <strong style={{ color: '#34d399' }}>₭ 225,400,000 (78.1%)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Sleek Categorized Sub-Tab Navigation Bar */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', flexWrap: 'wrap' }}>
           <button
@@ -779,7 +849,7 @@ export default function IncomeExpenseView({
                   <div>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>💎 ແຜນການເກັບເງິນອອມ & ແຜນລົງທຶນຕໍ່ໜ້າ (Savings & Future Investment)</h3>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                      ກອງທຶນສຳຮອງສຸກເສີນ, ຂະຫຍາຍສິນເຊື່ອ, ຊື້ສິນຊັບ & ອາຄານ, ແລະ ພັດທະນາລະບົບ IT
+                      ກອງທຶນສຳຮອງສຸກເສີນ, ຂະຫຍາຍສິນເຊື່ອ, ຊື້ສິນຊັບ & ອາຄານ
                     </p>
                   </div>
                 </div>
