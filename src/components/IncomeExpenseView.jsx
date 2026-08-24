@@ -200,7 +200,7 @@ export default function IncomeExpenseView({
         <div className="glass-panel kpi-card">
           <div className="kpi-info">
             <p>📜 ຈຳນວນສັນຍາສິນເຊື່ອລວມ (Total Loans)</p>
-            <h3 style={{ color: '#c084fc' }}>{allTimeSummary.totalLoansIssued} ຜົນງານສັນຍາ</h3>
+            <h3 style={{ color: '#c084fc' }}>{allTimeSummary.totalLoansIssued} ສັນຍາປ່ອຍກູ້ລວມ</h3>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '6px' }}>
               ເລີ່ມຕົ້ນປີ {allTimeSummary.startYear} ຫາ ປະຈຸບັນ
             </span>
@@ -289,7 +289,7 @@ export default function IncomeExpenseView({
                           {item.growthRateYoY}
                         </span>
                       </td>
-                      <td style={{ fontWeight: 600 }}>{item.loanCount} ຜົນງານ</td>
+                      <td style={{ fontWeight: 600 }}>{item.loanCount} ສັນຍາປ່ອຍກູ້</td>
                     </tr>
                   ))}
                 </tbody>
