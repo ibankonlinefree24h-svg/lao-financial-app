@@ -75,7 +75,6 @@ export default function IncomeExpenseView({
   };
 
   const { allTimeSummary, yearlyHistory, monthlyDetails } = lifetimeFinancialData;
-
   const currentYearMonthlyData = monthlyDetails[selectedYear] || monthlyDetails['2026'];
 
   let peakIncomeMonth = currentYearMonthlyData[0];
@@ -278,7 +277,7 @@ export default function IncomeExpenseView({
                   {yearlyHistory.map((item) => (
                     <tr key={item.year} style={item.year === '2026' ? { background: 'rgba(16, 185, 129, 0.08)' } : {}}>
                       <td style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
-                        ປີ {item.year} {item.year === '2026' && <span className="tag tag-emerald" style={{ fontSize: '0.7rem' }}>ປະຈຸບັນ</span>}
+                        ປີ {item.year} {item.year === '2024' ? <span className="tag tag-purple" style={{ fontSize: '0.7rem' }}>ປີກໍ່ຕັ້ງ</span> : item.year === '2026' ? <span className="tag tag-emerald" style={{ fontSize: '0.7rem' }}>ປະຈຸບັນ</span> : null}
                       </td>
                       <td style={{ fontWeight: 700, color: '#34d399' }}>₭ {item.income.toLocaleString()}</td>
                       <td style={{ fontWeight: 700, color: '#f87171' }}>₭ {item.expense.toLocaleString()}</td>
@@ -294,6 +293,107 @@ export default function IncomeExpenseView({
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* 🌟 PROMINENT 12-MONTH GRAPHIC BAR CHART & MoM % GROWTH FOR ALL YEARS */}
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <BarChart3 size={28} color="#34d399" />
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    📊 ກຣາຟຟິກລາຍຮັບ-ລາຍຈ່າຍ 12 ເດືອນ & % ເຕີບໂຕ MoM (ປີ {selectedYear})
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    ເບິ່ງພາບລວມ 12 ເດືອນ ຕັ້ງແຕ່ປີກໍ່ຕັ້ງ (2024, 2025, 2026) ພ້ອມ % ເຕີບໂຕ MoM
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '16px', fontSize: '0.82rem', fontWeight: 700 }}>
+                  <span style={{ color: '#34d399', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ width: '10px', height: '10px', background: '#10b981', borderRadius: '2px', display: 'inline-block' }} /> 🟢 ລາຍຮັບ
+                  </span>
+                  <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ width: '10px', height: '10px', background: '#ef4444', borderRadius: '2px', display: 'inline-block' }} /> 🔴 ລາຍຈ່າຍ
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '4px 10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>ເລືອກປີເບິ່ງ:</span>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.88rem', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', fontWeight: 700 }}
+                  >
+                    <option value="2026">ປີ 2026 (ປະຈຸບັນ)</option>
+                    <option value="2025">ປີ 2025</option>
+                    <option value="2024">ປີ 2024 (ປີກໍ່ຕັ້ງ)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Dynamic Graphic Bar Visualizer */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '300px', padding: '24px 16px 16px', background: 'rgba(0,0,0,0.3)', borderRadius: '14px', gap: '8px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
+              {currentYearMonthlyData.map((d, i) => {
+                const incomeHeight = Math.max(10, Math.round((d.income / 45000000) * 100));
+                const expenseHeight = Math.max(10, Math.round((d.expense / 45000000) * 100));
+
+                return (
+                  <div key={i} style={{ flex: 1, minWidth: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                    {/* Growth MoM Badge */}
+                    <span style={{ fontSize: '0.7rem', color: d.growthMoM.startsWith('+') ? '#34d399' : d.growthMoM === 'ເລີ່ມຕົ້ນ' ? '#c084fc' : '#f87171', fontWeight: 800, marginBottom: '6px' }}>
+                      {d.growthMoM}
+                    </span>
+
+                    {/* Bars Pair Container */}
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-end', height: '210px', width: '100%', justifyContent: 'center' }}>
+                      {/* Income Bar */}
+                      <div
+                        style={{
+                          width: '42%',
+                          background: 'linear-gradient(180deg, #34d399, #059669)',
+                          height: `${incomeHeight}%`,
+                          borderRadius: '4px 4px 0 0',
+                          boxShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+                          transition: 'height 0.4s ease'
+                        }}
+                        title={`${d.month} (${selectedYear}): ລາຍຮັບ ₭ ${d.income.toLocaleString()}`}
+                      />
+                      {/* Expense Bar */}
+                      <div
+                        style={{
+                          width: '42%',
+                          background: 'linear-gradient(180deg, #f87171, #dc2626)',
+                          height: `${expenseHeight}%`,
+                          borderRadius: '4px 4px 0 0',
+                          boxShadow: '0 0 10px rgba(239, 68, 68, 0.3)',
+                          transition: 'height 0.4s ease'
+                        }}
+                        title={`${d.month} (${selectedYear}): ລາຍຈ່າຍ ₭ ${d.expense.toLocaleString()}`}
+                      />
+                    </div>
+
+                    {/* Month Name */}
+                    <span style={{ fontSize: '0.75rem', marginTop: '10px', color: 'var(--text-primary)', fontWeight: 700, textAlign: 'center' }}>
+                      {d.month}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Peak Month Summary Banner */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', padding: '14px 18px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '12px' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                🏆 <strong>ເດືອນລາຍຮັບສູງສຸດ (ປີ {selectedYear}):</strong> {peakIncomeMonth.month} (₭ {peakIncomeMonth.income.toLocaleString()})
+              </span>
+              <span style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 700 }}>
+                💰 ກຳໄລລວມທັງໝົດ ປີ {selectedYear}: ₭ {currentYearMonthlyData.reduce((acc, curr) => acc + curr.profit, 0).toLocaleString()}
+              </span>
             </div>
           </div>
         </div>
@@ -316,7 +416,7 @@ export default function IncomeExpenseView({
                   onChange={(e) => setCompareYearA(e.target.value)}
                   style={{ padding: '6px 10px', borderRadius: '6px', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', fontWeight: 700 }}
                 >
-                  <option value="2024">ປີ 2024</option>
+                  <option value="2024">ປີ 2024 (ປີກໍ່ຕັ້ງ)</option>
                   <option value="2025">ປີ 2025</option>
                 </select>
                 <span style={{ fontSize: '0.85rem' }}>ໃສ່</span>
@@ -394,7 +494,7 @@ export default function IncomeExpenseView({
                 >
                   <option value="2026">ປີ 2026 (ປະຈຸບັນ)</option>
                   <option value="2025">ປີ 2025</option>
-                  <option value="2024">ປີ 2024</option>
+                  <option value="2024">ປີ 2024 (ປີກໍ່ຕັ້ງ)</option>
                 </select>
               </div>
             </div>
@@ -407,7 +507,7 @@ export default function IncomeExpenseView({
 
                 return (
                   <div key={i} style={{ flex: 1, minWidth: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
-                    <span style={{ fontSize: '0.7rem', color: d.growthMoM.startsWith('+') ? '#34d399' : '#f87171', fontWeight: 800, marginBottom: '6px' }}>
+                    <span style={{ fontSize: '0.7rem', color: d.growthMoM.startsWith('+') ? '#34d399' : d.growthMoM === 'ເລີ່ມຕົ້ນ' ? '#c084fc' : '#f87171', fontWeight: 800, marginBottom: '6px' }}>
                       {d.growthMoM}
                     </span>
 
