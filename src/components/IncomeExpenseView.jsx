@@ -50,7 +50,10 @@ import {
   Sun,
   PiggyBank,
   Briefcase,
-  Coins
+  Coins,
+  Percent,
+  Calculator,
+  BellRing
 } from 'lucide-react';
 import {
   defaultExchangeRates,
@@ -63,7 +66,9 @@ import {
   aiTaxAndHealthData,
   seasonalTrendsData,
   investmentPlanningFunds,
-  multiCurrencyRealBalances
+  multiCurrencyRealBalances,
+  recurringExpensesData,
+  interestExpenseRatioData
 } from '../data/mockIncomeExpenses';
 import ReceiptModal from './ReceiptModal';
 
@@ -75,7 +80,7 @@ export default function IncomeExpenseView({
   onUpdateExchangeRate
 }) {
   const [activeMainTab, setActiveMainTab] = useState('GRANULAR_TABLE'); // 'GRANULAR_TABLE', 'CONTINUOUS_CHART', 'PLANNING_SUITE', 'WALLETS', 'TRANSACTIONS'
-  const [planningSubTab, setPlanningSubTab] = useState('AI_TAX'); // 'AI_TAX', 'INVESTMENT', 'SEASONAL', 'PROJECTION', 'BUDGET'
+  const [planningSubTab, setPlanningSubTab] = useState('AI_TAX'); // 'AI_TAX', 'INVESTMENT', 'SEASONAL', 'PROJECTION', 'BUDGET', 'SIMULATOR'
   const [activeTypeFilter, setActiveTypeFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSlipUrl, setSelectedSlipUrl] = useState(null);
@@ -83,6 +88,9 @@ export default function IncomeExpenseView({
   const [activeDetailTx, setActiveDetailTx] = useState(null);
   const [activeMonthAudit, setActiveMonthAudit] = useState(null);
   const [isEditingRate, setIsEditingRate] = useState(false);
+
+  // Profit Simulator State
+  const [simulatedProfitTarget, setSimulatedProfitTarget] = useState(30000000);
 
   // Exchange Rates State
   const [rates, setRates] = useState(defaultExchangeRates);
@@ -131,6 +139,9 @@ export default function IncomeExpenseView({
 
     return matchSearch;
   });
+
+  // Calculate required interest revenue for simulated profit
+  const requiredInterestRevenue = Math.round(simulatedProfitTarget / (interestExpenseRatioData.netProfitPercent / 100));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -455,7 +466,136 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 🌟 5. YEAR-BY-YEAR PERFORMANCE COMPARISON PANEL (2025 VS 2026 YoY) */}
+      {/* 🌟 5. NEW MODULE: LOAN INTEREST TO EXPENSE RATIO GAUGE & CATEGORY DISTRIBUTION */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+        {/* Module A: Loan Interest to Expense Ratio Gauge */}
+        <div className="glass-panel" style={{ padding: '22px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+            <Scale size={24} color="#34d399" />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>⚖️ ອັດຕາສ່ວນດອກເບ້ຍຮັບ vs ຄ່າໃຊ້ຈ່າຍ (Interest to Expense Gauge)</h3>
+          </div>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '0 0 16px' }}>
+            ທຸກໆ <strong>₭ 100</strong> ຂອງດອກເບ້ຍຮັບ ຈະຖືກແບ່ງເປັນກຳໄລ clean profit ແລະ ຄ່າໃຊ້ຈ່າຍຕ່າງໆ:
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem', fontWeight: 700 }}>
+                <span style={{ color: '#34d399' }}>💰 ກຳໄລສຸດທິ (Clean Profit):</span>
+                <span style={{ color: '#34d399' }}>₭ 76.10 (76.1%)</span>
+              </div>
+              <div style={{ width: '100%', background: 'rgba(255,255,255,0.08)', height: '8px', borderRadius: '4px', marginTop: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '76.1%', background: '#34d399', height: '100%' }} />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem', fontWeight: 700 }}>
+                <span style={{ color: '#f87171' }}>📢 ຄ່າ Ads ໂຄສະນາ:</span>
+                <span style={{ color: '#f87171' }}>₭ 10.30 (10.3%)</span>
+              </div>
+              <div style={{ width: '100%', background: 'rgba(255,255,255,0.08)', height: '8px', borderRadius: '4px', marginTop: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '10.3%', background: '#f87171', height: '100%' }} />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem', fontWeight: 700 }}>
+                <span style={{ color: '#c084fc' }}>👥 ເງິນເດືອນພະນັກງານ:</span>
+                <span style={{ color: '#c084fc' }}>₭ 9.60 (9.6%)</span>
+              </div>
+              <div style={{ width: '100%', background: 'rgba(255,255,255,0.08)', height: '8px', borderRadius: '4px', marginTop: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '9.6%', background: '#c084fc', height: '100%' }} />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem', fontWeight: 700 }}>
+                <span style={{ color: '#38bdf8' }}>🏠 ຄ່າເຊົ່າ & IT Cloud Server:</span>
+                <span style={{ color: '#38bdf8' }}>₭ 4.00 (4.0%)</span>
+              </div>
+              <div style={{ width: '100%', background: 'rgba(255,255,255,0.08)', height: '8px', borderRadius: '4px', marginTop: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '4.0%', background: '#38bdf8', height: '100%' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Module B: Donut / Category-wise Expense Percentage Breakdown */}
+        <div className="glass-panel" style={{ padding: '22px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+            <PieChart size={24} color="#c084fc" />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>📊 ກຣາຟວົງມົນແຍກ % ລາຍຈ່າຍຕາມໝວດໝູ່ (Expense Distribution)</h3>
+          </div>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '0 0 16px' }}>
+            ສະແດງສັດສ່ວນ % ການໃຊ້ຈ່າຍແຕ່ລະໝວດໝູ່ ເພື່ອຄວບຄຸມຕົ້ນທຶນ:
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {expenseCategories.map((c) => (
+              <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: '12px', borderLeft: `4px solid ${c.color}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.1rem' }}>{c.icon}</span>
+                  <div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>{c.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>₭ {c.totalSpentLAK.toLocaleString()}</div>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <span className="tag tag-purple" style={{ fontSize: '0.8rem', fontWeight: 800, background: 'rgba(168,85,247,0.2)', color: '#c084fc' }}>
+                    {c.percentOfExpense}%
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 🌟 6. NEW MODULE: AUTO-RECURRING EXPENSE MANAGER (ຄ່າໃຊ້ຈ່າຍປະຈຳເດືອນ) */}
+      <div className="glass-panel" style={{ padding: '22px 26px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <BellRing size={26} color="#f87171" />
+            <div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                🔄 ລະບົບຕິດຕາມຄ່າໃຊ້ຈ່າຍປະຈຳເດືອນອັດໂນມັດ (Recurring Expense Manager)
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                ຕິດຕາມຄ່າເຊົ່າ, ເງິນເດືອນ, ແລະ ຄ່າ Ads ທີ່ຈະຕ້ອງຈ່າຍປະຈຳເດືອນ ພ້ອມແຈ້ງເຕືອນຄົບກຳນົດ
+              </p>
+            </div>
+          </div>
+
+          <button className="btn-primary-emerald" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+            <PlusCircle size={16} /> + ເພີ່ມຄ່າໃຊ້ຈ່າຍປະຈຳ
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+          {recurringExpensesData.map((r) => (
+            <div key={r.id} className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #f87171', borderRadius: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span className="tag tag-blue" style={{ fontSize: '0.75rem' }}>{r.dueDate}</span>
+                <span className={`status-badge-pill ${r.status.includes('ຈ່າຍແລ້ວ') ? 'green' : 'amber'}`} style={{ fontSize: '0.72rem' }}>
+                  {r.status}
+                </span>
+              </div>
+
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, margin: '10px 0 4px', color: 'var(--text-primary)' }}>{r.title}</h4>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f87171' }}>
+                ₭ {r.amountLAK.toLocaleString()} / ເດືອນ
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                ຊຳລະຜ່ານ: <strong>{r.walletName}</strong>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 🌟 7. YEAR-BY-YEAR PERFORMANCE COMPARISON PANEL (2025 VS 2026 YoY) */}
       <div className="glass-panel" style={{ padding: '22px 26px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -525,7 +665,7 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 6. Sleek Categorized Sub-Tab Navigation Bar */}
+      {/* 8. Sleek Categorized Sub-Tab Navigation Bar */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', flexWrap: 'wrap' }}>
           <button
@@ -573,6 +713,14 @@ export default function IncomeExpenseView({
             </button>
 
             <button
+              className={`filter-pill-btn ${planningSubTab === 'SIMULATOR' ? 'active' : ''}`}
+              onClick={() => setPlanningSubTab('SIMULATOR')}
+              style={{ padding: '6px 14px', fontSize: '0.82rem' }}
+            >
+              🧮 ເຄື່ອງມືຈຳລອງກຳໄລ Profit Simulator
+            </button>
+
+            <button
               className={`filter-pill-btn ${planningSubTab === 'INVESTMENT' ? 'active' : ''}`}
               onClick={() => setPlanningSubTab('INVESTMENT')}
               style={{ padding: '6px 14px', fontSize: '0.82rem' }}
@@ -601,7 +749,7 @@ export default function IncomeExpenseView({
               onClick={() => setPlanningSubTab('BUDGET')}
               style={{ padding: '6px 14px', fontSize: '0.82rem' }}
             >
-              💡 ເຕືອນງົບປະມານ & Statement Reconciliation
+              💡 ເຕືອນງົບປະມານ & Reconciliation
             </button>
           </div>
         )}
@@ -840,7 +988,60 @@ export default function IncomeExpenseView({
             </div>
           )}
 
-          {/* Sub-Module 2: Savings & Investment Funds */}
+          {/* Sub-Module 2: Profit Margin Simulator & Converter */}
+          {planningSubTab === 'SIMULATOR' && (
+            <div className="glass-panel" style={{ padding: '24px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(6, 182, 212, 0.35)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
+                <Calculator size={28} color="#38bdf8" />
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🧮 ເຄື່ອງມືຈຳລອງກຳໄລ & ປັບເປົ້າໝາຍລາຍຮັບ (Profit Margin Simulator)</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    ລອງປັບເປົ້າໝາຍກຳໄລທີ່ຕ້ອງການ ເພື່ອໃຫ້ AI ຄຳນວນຍອດດອກເບ້ຍຮັບຂັ້ນຕ່ຳທີ່ຕ້ອງສ້າງໃຫ້ໄດ້!
+                  </p>
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: '16px', marginBottom: '20px' }}>
+                <label style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>
+                  🎯 ເປົ້າໝາຍກຳໄລສຸດທິທີ່ຕ້ອງການຕໍ່ເດືອນ: <strong style={{ color: '#38bdf8', fontSize: '1.1rem' }}>₭ {simulatedProfitTarget.toLocaleString()} LAK</strong>
+                </label>
+
+                <input
+                  type="range"
+                  min="10000000"
+                  max="100000000"
+                  step="5000000"
+                  value={simulatedProfitTarget}
+                  onChange={(e) => setSimulatedProfitTarget(Number(e.target.value))}
+                  style={{ width: '100%', accentColor: '#38bdf8', cursor: 'pointer', margin: '10px 0' }}
+                />
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  <span>₭ 10M / ເດືອນ</span>
+                  <span>₭ 50M / ເດືອນ</span>
+                  <span>₭ 100M / ເດືອນ</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                <div className="glass-panel" style={{ padding: '18px', background: 'rgba(16,185,129,0.15)', borderLeft: '4px solid #10b981', borderRadius: '16px' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>🟢 ຍອດດອກເບ້ຍຮັບທີ່ຕ້ອງເຮັດໃຫ້ໄດ້ (Required Interest)</div>
+                  <h3 style={{ fontSize: '1.5rem', color: '#34d399', margin: '6px 0 0', fontWeight: 800 }}>
+                    ₭ {requiredInterestRevenue.toLocaleString()} LAK
+                  </h3>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '18px', background: 'rgba(239,68,68,0.12)', borderLeft: '4px solid #ef4444', borderRadius: '16px' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#f87171', fontWeight: 700 }}>🔴 ປະມານການຄ່າໃຊ້ຈ່າຍລວມ (Projected Expenses)</div>
+                  <h3 style={{ fontSize: '1.5rem', color: '#f87171', margin: '6px 0 0', fontWeight: 800 }}>
+                    ₭ {Math.round(requiredInterestRevenue - simulatedProfitTarget).toLocaleString()} LAK
+                  </h3>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Module 3: Savings & Investment Funds */}
           {planningSubTab === 'INVESTMENT' && (
             <div className="glass-panel" style={{ padding: '24px', borderRadius: '22px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
@@ -882,7 +1083,7 @@ export default function IncomeExpenseView({
             </div>
           )}
 
-          {/* Sub-Module 3: Seasonal Trends */}
+          {/* Sub-Module 4: Seasonal Trends */}
           {planningSubTab === 'SEASONAL' && (
             <div className="glass-panel" style={{ padding: '24px', borderRadius: '22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
@@ -911,7 +1112,7 @@ export default function IncomeExpenseView({
             </div>
           )}
 
-          {/* Sub-Module 4: Projection & Break-Even */}
+          {/* Sub-Module 5: Projection & Break-Even */}
           {planningSubTab === 'PROJECTION' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div className="glass-panel" style={{ padding: '24px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(30, 41, 59, 0.9))', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
@@ -993,7 +1194,7 @@ export default function IncomeExpenseView({
             </div>
           )}
 
-          {/* Sub-Module 5: Smart Budget Alerts & Reconciliation */}
+          {/* Sub-Module 6: Smart Budget Alerts & Reconciliation */}
           {planningSubTab === 'BUDGET' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div className="glass-panel" style={{ padding: '24px', borderRadius: '22px' }}>

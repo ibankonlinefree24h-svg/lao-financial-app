@@ -1,4 +1,4 @@
-// Multi-Year Financial Dataset with Real 4-Currency Balances & Combined LAK Net Worth Summary
+// Multi-Year Financial Dataset with Real 4-Currency Balances, Recurring Expenses, Interest-Expense Ratio & Profit Simulator
 
 export const defaultExchangeRates = {
   lak: 1,
@@ -59,6 +59,25 @@ export const multiCurrencyRealBalances = {
     flag: '🇨🇳'
   },
   totalCombinedLAK: 314200000 // 45.2M + 94.5M + 112.5M + 62M
+};
+
+// Recurring Monthly Expenses Dataset
+export const recurringExpensesData = [
+  { id: 'REC-RENT', title: '🏠 ຄ່າເຊົ່າອາຄານ & IT Cloud Server', amountLAK: 1200000, dueDate: 'ທຸກວັນທີ 1', walletName: 'BCEL One', status: '🟢 ຈ່າຍແລ້ວ', category: 'IT & Office' },
+  { id: 'REC-SALARY', title: '👥 ເງິນເດືອນພະນັກງານບໍລິຫານ & ສິນເຊື່ອ', amountLAK: 2700000, dueDate: 'ທຸກວັນທີ 28', walletName: 'BCEL One', status: '⏳ ໃກ້ຄົບກຳນົດ', category: 'Salary' },
+  { id: 'REC-ADS', title: '📢 ຄ່າ Ads ໂຄສະນາ Facebook & TikTok', amountLAK: 2900000, dueDate: 'ທຸກວັນທີ 15', walletName: 'BCEL One', status: '🟢 ຈ່າຍແລ້ວ', category: 'Marketing' }
+];
+
+// Loan Interest to Expense Ratio Breakdown (Per ₭ 100 Interest Earned)
+export const interestExpenseRatioData = {
+  netProfitPercent: 76.1,
+  adsExpensePercent: 10.3,
+  salaryExpensePercent: 9.6,
+  officeExpensePercent: 4.0,
+  netProfitPer100: 76.10,
+  adsPer100: 10.30,
+  salaryPer100: 9.60,
+  officePer100: 4.00
 };
 
 // AI Tax & Financial Health Advisor Data
@@ -175,11 +194,11 @@ export const initialWallets = [
 ];
 
 export const expenseCategories = [
-  { id: 'EXP-ADS', name: '📢 ຄ່າ Ads ໂຄສະນາ (Facebook/TikTok)', icon: '📢', color: '#ef4444', budgetLAK: 4000000, totalSpentLAK: 2900000, status: '🟢 Safe (72.5%)' },
-  { id: 'EXP-SALARY', name: '👥 ເງິນເດືອນພະນັກງານ', icon: '👥', color: '#6366f1', budgetLAK: 8000000, totalSpentLAK: 2700000, status: '🟢 Safe (33.7%)' },
-  { id: 'EXP-SERVER', name: '🏠 ຄ່າເຊົ່າ & IT Server Cloud', icon: '🏠', color: '#8b5cf6', budgetLAK: 2500000, totalSpentLAK: 1200000, status: '🟢 Safe (48.0%)' },
-  { id: 'EXP-FUEL', name: '🚗 ຄ່ານ້ຳມັນ & ຕິດຕາມໜີ້', icon: '🚗', color: '#3b82f6', budgetLAK: 1800000, totalSpentLAK: 850000, status: '🟢 Safe (47.2%)' },
-  { id: 'EXP-FOOD', name: '🍜 ອາຫານ & ຮັບຮອງລູກຄ້າ', icon: '🍜', color: '#f97316', budgetLAK: 3500000, totalSpentLAK: 1100000, status: '🟢 Safe (31.4%)' }
+  { id: 'EXP-ADS', name: '📢 ຄ່າ Ads ໂຄສະນາ (Facebook/TikTok)', icon: '📢', color: '#ef4444', budgetLAK: 4000000, totalSpentLAK: 2900000, percentOfExpense: 43.9, status: '🟢 Safe (72.5%)' },
+  { id: 'EXP-SALARY', name: '👥 ເງິນເດືອນພະນັກງານ', icon: '👥', color: '#6366f1', budgetLAK: 8000000, totalSpentLAK: 2700000, percentOfExpense: 40.9, status: '🟢 Safe (33.7%)' },
+  { id: 'EXP-SERVER', name: '🏠 ຄ່າເຊົ່າ & IT Server Cloud', icon: '🏠', color: '#8b5cf6', budgetLAK: 2500000, totalSpentLAK: 1200000, percentOfExpense: 15.2, status: '🟢 Safe (48.0%)' },
+  { id: 'EXP-FUEL', name: '🚗 ຄ່ານ້ຳມັນ & ຕິດຕາມໜີ້', icon: '🚗', color: '#3b82f6', budgetLAK: 1800000, totalSpentLAK: 850000, percentOfExpense: 12.8, status: '🟢 Safe (47.2%)' },
+  { id: 'EXP-FOOD', name: '🍜 ອາຫານ & ຮັບຮອງລູກຄ້າ', icon: '🍜', color: '#f97316', budgetLAK: 3500000, totalSpentLAK: 1100000, percentOfExpense: 16.6, status: '🟢 Safe (31.4%)' }
 ];
 
 export const incomeCategories = [
