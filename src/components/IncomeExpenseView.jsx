@@ -32,7 +32,11 @@ import {
   History,
   Layers,
   Scale,
-  Globe
+  Globe,
+  Zap,
+  Activity,
+  CreditCard,
+  ChevronRight
 } from 'lucide-react';
 import {
   defaultExchangeRates,
@@ -50,7 +54,7 @@ export default function IncomeExpenseView({
   exchangeRate,
   onUpdateExchangeRate
 }) {
-  const [activeSubTab, setActiveSubTab] = useState('CONTINUOUS'); // 'CONTINUOUS', 'SUMMARY', 'YOY', 'TRANSACTIONS'
+  const [chartViewMode, setChartViewMode] = useState('BAR_24'); // 'BAR_24', 'DONUT_CAT', 'AREA_FLOW'
   const [activeTypeFilter, setActiveTypeFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSlipUrl, setSelectedSlipUrl] = useState(null);
@@ -79,6 +83,9 @@ export default function IncomeExpenseView({
     if (m.income > maxIncomeVal) maxIncomeVal = m.income;
   });
 
+  // Calculate live balances across wallets
+  const totalWalletLiquidityLAK = initialWallets.reduce((sum, w) => sum + w.balanceLAK, 0);
+
   const handleSaveRates = () => {
     setRates({
       ...rates,
@@ -103,10 +110,12 @@ export default function IncomeExpenseView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* 1. Exchange Rate Engine Banner */}
-      <div className="exchange-rate-banner">
+      {/* 1. Next-Gen Multi-Currency Exchange Rate Bar */}
+      <div className="exchange-rate-banner" style={{ background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9))', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '14px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <RefreshCw size={18} color="var(--accent-purple)" />
+          <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+            <RefreshCw size={16} />
+          </div>
           <span style={{ fontWeight: 600, fontSize: '0.88rem' }}>
             ອັດຕາແລກປ່ຽນ 4 ສະກຸນ: <strong>1 THB = {rates.thbToLak} ₭</strong> | <strong>1 USD = {rates.usdToLak.toLocaleString()} ₭</strong> | <strong>1 CNY = {rates.cnyToLak.toLocaleString()} ₭</strong>
           </span>
@@ -143,7 +152,7 @@ export default function IncomeExpenseView({
           ) : (
             <button
               className="icon-btn-xs"
-              style={{ width: 'auto', padding: '4px 12px', fontSize: '0.8rem', display: 'flex', gap: '4px' }}
+              style={{ width: 'auto', padding: '6px 14px', fontSize: '0.8rem', display: 'flex', gap: '6px', background: 'rgba(255,255,255,0.06)' }}
               onClick={() => setIsEditingRate(true)}
             >
               <Sliders size={14} /> ປັບອັດຕາແລກປ່ຽນ
@@ -152,13 +161,17 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 2. Key Lifetime Financial Cards (Founding 2025 -> 2026 Present) */}
+      {/* 2. 👑 MASTER FINANCIAL COMMAND CARDS */}
       <div className="preview-grid" style={{ margin: 0 }}>
-        <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.1))', borderColor: 'rgba(16,185,129,0.3)' }}>
+        {/* Total Lifetime Income */}
+        <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1))', borderColor: 'rgba(16, 185, 129, 0.35)', position: 'relative', overflow: 'hidden' }}>
           <div className="kpi-info">
-            <p>🟢 ລາຍຮັບລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 - 2026)</p>
-            <h3 style={{ color: '#34d399', fontSize: '1.45rem' }}>₭ {allTimeSummary.totalIncomeLAK.toLocaleString()}</h3>
-            <span style={{ fontSize: '0.82rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
+            <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />
+              ລາຍຮັບລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 - 2026)
+            </p>
+            <h3 style={{ color: '#34d399', fontSize: '1.5rem', fontWeight: 800 }}>₭ {allTimeSummary.totalIncomeLAK.toLocaleString()}</h3>
+            <span style={{ fontSize: '0.8rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', fontWeight: 600 }}>
               <ArrowUpRight size={15} /> ດອກເບ້ຍສິນເຊື່ອ + ຄ່າທຳນຽມ (ຕັ້ງແຕ່ກໍ່ຕັ້ງ)
             </span>
           </div>
@@ -167,24 +180,32 @@ export default function IncomeExpenseView({
           </div>
         </div>
 
-        <div className="glass-panel kpi-card">
+        {/* Total Lifetime Expense */}
+        <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(185, 28, 28, 0.08))', borderColor: 'rgba(239, 68, 68, 0.3)', position: 'relative', overflow: 'hidden' }}>
           <div className="kpi-info">
-            <p>🔴 ລາຍຈ່າຍລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 - 2026)</p>
-            <h3 style={{ color: '#f87171' }}>₭ {allTimeSummary.totalExpenseLAK.toLocaleString()}</h3>
-            <span style={{ fontSize: '0.82rem', color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
+            <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f87171', display: 'inline-block' }} />
+              ລາຍຈ່າຍລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 - 2026)
+            </p>
+            <h3 style={{ color: '#f87171', fontSize: '1.5rem', fontWeight: 800 }}>₭ {allTimeSummary.totalExpenseLAK.toLocaleString()}</h3>
+            <span style={{ fontSize: '0.8rem', color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', fontWeight: 600 }}>
               <ArrowDownRight size={15} /> Ads ໂຄສະນາ, ເງິນເດືອນ, ລະບົບ IT
             </span>
           </div>
           <div className="kpi-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#f87171' }}>
-            <TrendingDown size={24} />
+            <TrendingDown size={26} />
           </div>
         </div>
 
-        <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(2,132,199,0.1))', borderColor: 'rgba(6,182,212,0.3)' }}>
+        {/* Net Profit & Margin */}
+        <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(2, 132, 199, 0.1))', borderColor: 'rgba(6, 182, 212, 0.35)' }}>
           <div className="kpi-info">
-            <p>💰 ກຳໄລສຸດທິລວມ (2025 - 2026)</p>
-            <h3 style={{ color: '#38bdf8', fontSize: '1.45rem' }}>₭ {allTimeSummary.netProfitLAK.toLocaleString()}</h3>
-            <span style={{ fontSize: '0.82rem', color: 'var(--accent-cyan)', marginTop: '6px', fontWeight: 700 }}>
+            <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#38bdf8', display: 'inline-block' }} />
+              ກຳໄລສຸດທິລວມ (Net Profit)
+            </p>
+            <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', fontWeight: 800 }}>₭ {allTimeSummary.netProfitLAK.toLocaleString()}</h3>
+            <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', marginTop: '6px', fontWeight: 700 }}>
               ອັດຕາກຳໄລລວມ: {allTimeSummary.overallProfitMarginPercent}%
             </span>
           </div>
@@ -193,76 +214,71 @@ export default function IncomeExpenseView({
           </div>
         </div>
 
-        <div className="glass-panel kpi-card">
+        {/* Available Liquidity Across Wallets */}
+        <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(126, 34, 206, 0.1))', borderColor: 'rgba(168, 85, 247, 0.35)' }}>
           <div className="kpi-info">
-            <p>📜 ຈຳນວນສັນຍາສິນເຊື່ອລວມ (Total Loans)</p>
-            <h3 style={{ color: '#c084fc' }}>{allTimeSummary.totalLoansIssued} ສັນຍາປ່ອຍກູ້ລວມ</h3>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '6px' }}>
-              ເລີ່ມຕົ້ນປີ {allTimeSummary.startYear} ຫາ ປະຈຸບັນ
+            <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#c084fc', display: 'inline-block' }} />
+              ເງິນສົດ & ບັນຊີຄົງເຫຼືອລວມ (Liquidity)
+            </p>
+            <h3 style={{ color: '#c084fc', fontSize: '1.5rem', fontWeight: 800 }}>₭ {totalWalletLiquidityLAK.toLocaleString()}</h3>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 600 }}>
+              ລວມ BCEL One, JDB, LDB, APB & Cash
             </span>
           </div>
           <div className="kpi-icon" style={{ background: 'rgba(168, 85, 247, 0.2)', color: '#c084fc' }}>
-            <Award size={24} />
+            <Building2 size={26} />
           </div>
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', flexWrap: 'wrap' }}>
-        <button
-          className={`filter-pill-btn ${activeSubTab === 'CONTINUOUS' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('CONTINUOUS')}
-          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
-        >
-          📊 1. ກຣາຟຟິກລຽງກັນຕັ້ງແຕ່ກໍ່ຕັ້ງ 2025 - 2026 ປະຈຸບັນ
-        </button>
-
-        <button
-          className={`filter-pill-btn ${activeSubTab === 'SUMMARY' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('SUMMARY')}
-          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
-        >
-          🌐 2. ສະຫຼຸບລວມ ປີ 2025 vs 2026
-        </button>
-
-        <button
-          className={`filter-pill-btn ${activeSubTab === 'TRANSACTIONS' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('TRANSACTIONS')}
-          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
-        >
-          💳 3. ບັນທຶກລາຍການ ລາຍຮັບ-ລາຍຈ່າຍ ({transactions.length})
-        </button>
-      </div>
-
-      {/* 🌟 MAIN FEATURE: CONTINUOUS 24-MONTH STREAM GRAPHIC CHART (2025 - 2026) */}
-      {activeSubTab === 'CONTINUOUS' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <BarChart3 size={30} color="#34d399" />
-                <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-                    📊 ກຣາຟຟິກລາຍຮັບ-ລາຍຈ່າຍ ລຽງກັນຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 ຫາ 2026 ປະຈຸບັນ)
-                  </h3>
-                  <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-                    ສະແດງທັງໝົດ 24 ເດືອນລຽງກັນ: 🔷 12 ເດືອນປີກໍ່ຕັ້ງ 2025 | 🟢 12 ເດືອນປີປະຈຸບັນ 2026 ພ້ອມ % ເຕີບໂຕ MoM
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <span className="tag tag-blue" style={{ fontSize: '0.82rem' }}>
-                  📅 ປີກໍ່ຕັ້ງ 2025: ₭ 182.4M
-                </span>
-                <span className="tag tag-emerald" style={{ fontSize: '0.82rem' }}>
-                  🟢 ປີປະຈຸບັນ 2026: ₭ 288.6M (+58.2%)
-                </span>
-              </div>
+      {/* 3. 🎨 VISUAL FINANCIAL MATRIX (Interactive 3-Mode Visualizer) */}
+      <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'linear-gradient(135deg, #10b981, #06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+              <BarChart3 size={20} />
             </div>
+            <div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>📊 ກຣາຟຟິກວິເຄາະການເງິນ (Financial Visual Matrix)</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                ສະແດງຜົນ 24 ເດືອນລຽງກັນ (2025 ຫາ 2026), ສັດສ່ວນລາຍຈ່າຍ, ແລະ ກະແສເງິນສົດ
+              </p>
+            </div>
+          </div>
 
-            {/* Continuous 24-Month Bar Chart */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '330px', padding: '26px 16px 16px', background: 'rgba(0,0,0,0.35)', borderRadius: '14px', gap: '6px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
+          {/* Visual Mode Switcher Pills */}
+          <div style={{ display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+            <button
+              className={`filter-pill-btn ${chartViewMode === 'BAR_24' ? 'active' : ''}`}
+              onClick={() => setChartViewMode('BAR_24')}
+              style={{ padding: '6px 14px', fontSize: '0.82rem' }}
+            >
+              📊 24 ເດືອນ ລຽງກັນ
+            </button>
+
+            <button
+              className={`filter-pill-btn ${chartViewMode === 'DONUT_CAT' ? 'active' : ''}`}
+              onClick={() => setChartViewMode('DONUT_CAT')}
+              style={{ padding: '6px 14px', fontSize: '0.82rem' }}
+            >
+              🍩 ສັດສ່ວນລາຍຈ່າຍ
+            </button>
+
+            <button
+              className={`filter-pill-btn ${chartViewMode === 'AREA_FLOW' ? 'active' : ''}`}
+              onClick={() => setChartViewMode('AREA_FLOW')}
+              style={{ padding: '6px 14px', fontSize: '0.82rem' }}
+            >
+              ⚡ ກະແສເງິນສົດ Flow
+            </button>
+          </div>
+        </div>
+
+        {/* MODE 1: CONTINUOUS 24-MONTH SIDE-BY-SIDE BAR GRAPHIC */}
+        {chartViewMode === 'BAR_24' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '330px', padding: '26px 16px 16px', background: 'rgba(0,0,0,0.35)', borderRadius: '16px', gap: '6px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
               {continuous24Months.map((d, i) => {
                 const incomeHeight = Math.max(12, Math.round((d.income / maxIncomeVal) * 100));
                 const expenseHeight = Math.max(12, Math.round((d.expense / maxIncomeVal) * 100));
@@ -275,7 +291,7 @@ export default function IncomeExpenseView({
                       {d.growthMoM}
                     </span>
 
-                    {/* Bar Container */}
+                    {/* Bars Container */}
                     <div style={{ display: 'flex', gap: '3px', alignItems: 'flex-end', height: '210px', width: '100%', justifyContent: 'center' }}>
                       {/* Income Bar */}
                       <div
@@ -286,7 +302,8 @@ export default function IncomeExpenseView({
                             : 'linear-gradient(180deg, #38bdf8, #0284c7)',
                           height: `${incomeHeight}%`,
                           borderRadius: '4px 4px 0 0',
-                          boxShadow: is2026 ? '0 0 10px rgba(16, 185, 129, 0.35)' : '0 0 10px rgba(56, 189, 248, 0.35)'
+                          boxShadow: is2026 ? '0 0 10px rgba(16, 185, 129, 0.35)' : '0 0 10px rgba(56, 189, 248, 0.35)',
+                          transition: 'height 0.4s ease'
                         }}
                         title={`${d.month}: ລາຍຮັບ ₭ ${d.income.toLocaleString()}`}
                       />
@@ -297,7 +314,8 @@ export default function IncomeExpenseView({
                           background: 'linear-gradient(180deg, #f87171, #dc2626)',
                           height: `${expenseHeight}%`,
                           borderRadius: '4px 4px 0 0',
-                          boxShadow: '0 0 10px rgba(239, 68, 68, 0.3)'
+                          boxShadow: '0 0 10px rgba(239, 68, 68, 0.3)',
+                          transition: 'height 0.4s ease'
                         }}
                         title={`${d.month}: ລາຍຈ່າຍ ₭ ${d.expense.toLocaleString()}`}
                       />
@@ -312,189 +330,228 @@ export default function IncomeExpenseView({
               })}
             </div>
 
-            {/* Visual Legend */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '14px 18px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '14px 18px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '12px' }}>
               <div style={{ display: 'flex', gap: '18px', fontSize: '0.85rem', fontWeight: 700 }}>
                 <span style={{ color: '#38bdf8' }}>🔷 ປີກໍ່ຕັ້ງ 2025 (12 ເດືອນ - ສີຟ້າ)</span>
                 <span style={{ color: '#34d399' }}>🟢 ປີປະຈຸບັນ 2026 (12 ເດືອນ - ສີຂຽວ)</span>
                 <span style={{ color: '#f87171' }}>🔴 ລາຍຈ່າຍ (ສີແດງ)</span>
               </div>
-
-              <span style={{ fontSize: '0.88rem', color: '#38bdf8', fontWeight: 800 }}>
+              <span style={{ fontSize: '0.88rem', color: '#34d399', fontWeight: 800 }}>
                 💰 ລາຍຮັບລວມ 24 ເດືອນ: ₭ {allTimeSummary.totalIncomeLAK.toLocaleString()}
               </span>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* TAB 2: 🌐 YEARLY SUMMARY (2025 vs 2026) */}
-      {activeSubTab === 'SUMMARY' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <History size={24} color="#34d399" />
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>📅 ສະຫຼຸບລາຍຮັບ-ລາຍຈ່າຍ ແຍກຕາມແຕ່ລະປີ (2025 & 2026)</h3>
-              </div>
-            </div>
-
-            <div className="table-responsive-wrapper">
-              <table className="customer-full-table">
-                <thead>
-                  <tr>
-                    <th>ປີ (Year)</th>
-                    <th>ລາຍຮັບລວມ (Total Income)</th>
-                    <th>ລາຍຈ່າຍລວມ (Total Expense)</th>
-                    <th>ກຳໄລສຸດທິ (Net Profit)</th>
-                    <th>ອັດຕາກຳໄລ (%)</th>
-                    <th>% ເຕີບໂຕ YoY</th>
-                    <th>ສັນຍາສິນເຊື່ອ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {yearlyHistory.map((item) => (
-                    <tr key={item.year} style={item.year === '2026' ? { background: 'rgba(16, 185, 129, 0.08)' } : {}}>
-                      <td style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
-                        ປີ {item.year} {item.year === '2026' && <span className="tag tag-emerald" style={{ fontSize: '0.7rem' }}>ປະຈຸບັນ</span>}
-                      </td>
-                      <td style={{ fontWeight: 700, color: '#34d399' }}>₭ {item.income.toLocaleString()}</td>
-                      <td style={{ fontWeight: 700, color: '#f87171' }}>₭ {item.expense.toLocaleString()}</td>
-                      <td style={{ fontWeight: 800, color: '#38bdf8', fontSize: '0.98rem' }}>₭ {item.profit.toLocaleString()}</td>
-                      <td style={{ fontWeight: 700, color: 'var(--accent-cyan)' }}>{item.marginPercent}%</td>
-                      <td>
-                        <span className="status-badge-pill green" style={{ fontSize: '0.78rem' }}>
-                          {item.growthRateYoY}
-                        </span>
-                      </td>
-                      <td style={{ fontWeight: 600 }}>{item.loanCount} ສັນຍາປ່ອຍກູ້</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: 💳 LIVE TRANSACTIONS LOG */}
-      {activeSubTab === 'TRANSACTIONS' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button className="btn-primary-emerald" onClick={() => onAddTransaction('INCOME')}>
-                  <PlusCircle size={18} /> + ບັນທຶກລາຍຮັບ
-                </button>
-                <button
-                  style={{
-                    background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                    color: 'white',
-                    padding: '10px 18px',
-                    borderRadius: '12px',
-                    fontWeight: 600,
-                    fontSize: '0.88rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    boxShadow: '0 4px 15px rgba(239, 68, 68, 0.35)'
-                  }}
-                  onClick={() => onAddTransaction('EXPENSE')}
-                >
-                  <MinusCircle size={18} /> - ບັນທຶກລາຍຈ່າຍ
-                </button>
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div className="filter-pill-buttons">
-                  <button className={`filter-pill-btn ${activeTypeFilter === 'ALL' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('ALL')}>
-                    ທັງໝົດ ({transactions.length})
-                  </button>
-                  <button className={`filter-pill-btn ${activeTypeFilter === 'INCOME' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('INCOME')}>
-                    🟢 ລາຍຮັບ
-                  </button>
-                  <button className={`filter-pill-btn ${activeTypeFilter === 'EXPENSE' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('EXPENSE')}>
-                    🔴 ລາຍຈ່າຍ
-                  </button>
+        {/* MODE 2: CATEGORY SPENDING DONUT DISTRIBUTION */}
+        {chartViewMode === 'DONUT_CAT' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', padding: '10px' }}>
+            {expenseCategories.slice(0, 6).map((cat, idx) => (
+              <div key={idx} className="glass-panel" style={{ padding: '18px', background: 'rgba(0,0,0,0.25)', borderLeft: `4px solid ${cat.color}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '1.2rem' }}>{cat.icon}</span>
+                  <span className="tag tag-pink" style={{ fontSize: '0.75rem' }}>ໝວດລາຍຈ່າຍ</span>
                 </div>
+                <h4 style={{ fontSize: '0.98rem', fontWeight: 700, margin: '8px 0 4px' }}>{cat.name}</h4>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ງົບປະມານ: ₭ {cat.budgetLAK.toLocaleString()}</div>
+                <h3 style={{ fontSize: '1.2rem', color: cat.color, margin: '8px 0 0', fontWeight: 800 }}>
+                  ₭ {Math.round(cat.budgetLAK * 0.65).toLocaleString()}
+                </h3>
+              </div>
+            ))}
+          </div>
+        )}
 
-                <div className="search-bar-gold" style={{ width: '220px' }}>
-                  <Search size={16} color="var(--text-muted)" />
-                  <input
-                    type="text"
-                    placeholder="ຄົ້ນຫາ..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+        {/* MODE 3: NET CASH FLOW TREND FLOW */}
+        {chartViewMode === 'AREA_FLOW' && (
+          <div style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <h4 style={{ marginBottom: '14px', fontSize: '1rem', color: '#38bdf8', fontWeight: 700 }}>
+              ⚡ ກະແສເງິນສົດສຸດທິ (Net Cumulative Cash Flow Flow)
+            </h4>
+            <div style={{ display: 'flex', alignItems: 'flex-end', height: '220px', gap: '8px', overflowX: 'auto', paddingBottom: '10px' }}>
+              {continuous24Months.map((m, idx) => (
+                <div key={idx} style={{ flex: 1, minWidth: '45px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                  <div
+                    style={{
+                      width: '80%',
+                      background: 'linear-gradient(180deg, #38bdf8, rgba(56, 189, 248, 0.2))',
+                      height: `${Math.max(15, Math.round((m.profit / 36000000) * 100))}%`,
+                      borderRadius: '6px 6px 0 0',
+                      boxShadow: '0 0 12px rgba(56, 189, 248, 0.4)'
+                    }}
+                    title={`${m.month}: ກຳໄລ ₭ ${m.profit.toLocaleString()}`}
                   />
+                  <span style={{ fontSize: '0.65rem', marginTop: '6px', color: 'var(--text-secondary)' }}>{m.shortMonth}</span>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 4. 💳 SMART WALLET Liquidity & Quick Action Buttons */}
+      <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800 }}>💳 ບັນຊີທະນາຄານ & ຕູ້ເງິນສົດ (Multi-Bank Liquidity)</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ບໍລິຫານຈັດການຍອດເງິນຄົງເຫຼືອແຕ່ລະບັນຊີ</p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button className="btn-primary-emerald" onClick={() => onAddTransaction('INCOME')}>
+              <PlusCircle size={18} /> + ບັນທຶກລາຍຮັບ
+            </button>
+            <button
+              style={{
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                color: 'white',
+                padding: '10px 18px',
+                borderRadius: '12px',
+                fontWeight: 600,
+                fontSize: '0.88rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 15px rgba(239, 68, 68, 0.35)'
+              }}
+              onClick={() => onAddTransaction('EXPENSE')}
+            >
+              <MinusCircle size={18} /> - ບັນທຶກລາຍຈ່າຍ
+            </button>
+            <button
+              style={{
+                background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                color: 'white',
+                padding: '10px 18px',
+                borderRadius: '12px',
+                fontWeight: 600,
+                fontSize: '0.88rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 15px rgba(99, 102, 241, 0.35)'
+              }}
+              onClick={() => onAddTransaction('TRANSFER')}
+            >
+              <ArrowRightLeft size={18} /> 🔄 ໂອນຍ້າຍບັນຊີ
+            </button>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+          {initialWallets.map((w) => (
+            <div key={w.id} className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: `4px solid ${w.color}`, borderRadius: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '1.4rem' }}>{w.icon}</span>
+                <span className="tag tag-purple" style={{ fontSize: '0.7rem' }}>{w.type}</span>
               </div>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: '8px 0 2px', color: 'var(--text-primary)' }}>{w.name}</h4>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{w.accountNo}</div>
+              <h3 style={{ fontSize: '1.2rem', color: w.balanceLAK >= 0 ? w.color : '#f87171', margin: '10px 0 0', fontWeight: 800 }}>
+                ₭ {w.balanceLAK.toLocaleString()}
+              </h3>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. ⚡ LIVE TRANSACTION STREAM TABLE */}
+      <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Activity size={22} color="#34d399" />
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800 }}>⚡ ລາຍການທຸລະກຳ Real-Time (Live Activity Stream)</h3>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="filter-pill-buttons">
+              <button className={`filter-pill-btn ${activeTypeFilter === 'ALL' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('ALL')}>
+                ທັງໝົດ ({transactions.length})
+              </button>
+              <button className={`filter-pill-btn ${activeTypeFilter === 'INCOME' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('INCOME')}>
+                🟢 ລາຍຮັບ
+              </button>
+              <button className={`filter-pill-btn ${activeTypeFilter === 'EXPENSE' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('EXPENSE')}>
+                🔴 ລາຍຈ່າຍ
+              </button>
             </div>
 
-            <div className="table-responsive-wrapper" style={{ marginTop: '20px' }}>
-              <table className="customer-full-table">
-                <thead>
-                  <tr>
-                    <th>ວັນທີ/ເວລາ</th>
-                    <th>ປະເພດ</th>
-                    <th>ໝວດໝູ່ & ແທັກ</th>
-                    <th>ບັນຊີ/ກະເປົາເງິນ</th>
-                    <th>ຜູ້ຈ່າຍ / ຜູ້ຮັບ / ລູກຄ້າ</th>
-                    <th>ຈຳນວນເງິນ & ສະກຸນເງິນ</th>
-                    <th>ມູນຄ່າລວມເປັນກີບ</th>
-                    <th>ໃບສຳຄັນ / ສະລິບ</th>
-                    <th>ໝາຍເຫດ</th>
-                    <th>ຈັດການ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredTransactions.map((tx) => {
-                    const isIncome = tx.type === 'INCOME';
-                    const convertedLAK = convert3ToLAK(tx.amount, tx.currency);
-
-                    return (
-                      <tr key={tx.id}>
-                        <td style={{ fontSize: '0.82rem' }}>{tx.date}</td>
-                        <td>
-                          <span className={`status-badge-pill ${isIncome ? 'green' : 'red'}`}>
-                            {isIncome ? '🟢 ລາຍຮັບ' : '🔴 ລາຍຈ່າຍ'}
-                          </span>
-                        </td>
-                        <td>{tx.category}</td>
-                        <td>{tx.walletName}</td>
-                        <td>{tx.customerName || '-'}</td>
-                        <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
-                          {tx.currency === 'LAK' ? `₭ ${tx.amount.toLocaleString()}` : `${tx.amount.toLocaleString()} ${tx.currency}`}
-                        </td>
-                        <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
-                          ₭ {convertedLAK.toLocaleString()}
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <button className="table-link-btn" onClick={() => setActiveReceiptTx(tx)}>
-                              <Printer size={13} /> ໃບສຳຄັນ
-                            </button>
-                            {tx.slipUrl && (
-                              <button className="table-link-btn" onClick={() => setSelectedSlipUrl(tx.slipUrl)}>
-                                <ImageIcon size={13} /> ສະລິບ
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                        <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{tx.note || '-'}</td>
-                        <td>
-                          <button className="icon-btn-xs" style={{ color: '#f87171' }} onClick={() => onDeleteTransaction(tx.id)}>
-                            <X size={15} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="search-bar-gold" style={{ width: '220px' }}>
+              <Search size={16} color="var(--text-muted)" />
+              <input
+                type="text"
+                placeholder="ຄົ້ນຫາ..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
         </div>
-      )}
+
+        <div className="table-responsive-wrapper">
+          <table className="customer-full-table">
+            <thead>
+              <tr>
+                <th>ວັນທີ/ເວລາ</th>
+                <th>ປະເພດ</th>
+                <th>ໝວດໝູ່ & ແທັກ</th>
+                <th>ບັນຊີ/ກະເປົາເງິນ</th>
+                <th>ຜູ້ຈ່າຍ / ຜູ້ຮັບ / ລູກຄ້າ</th>
+                <th>ຈຳນວນເງິນ & ສະກຸນເງິນ</th>
+                <th>ມູນຄ່າລວມເປັນກີບ</th>
+                <th>ໃບສຳຄັນ / ສະລິບ</th>
+                <th>ໝາຍເຫດ</th>
+                <th>ຈັດການ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTransactions.map((tx) => {
+                const isIncome = tx.type === 'INCOME';
+                const isExpense = tx.type === 'EXPENSE';
+                const convertedLAK = convert3ToLAK(tx.amount, tx.currency);
+
+                return (
+                  <tr key={tx.id}>
+                    <td style={{ fontSize: '0.82rem' }}>{tx.date}</td>
+                    <td>
+                      <span className={`status-badge-pill ${isIncome ? 'green' : 'red'}`}>
+                        {isIncome ? '🟢 ລາຍຮັບ' : '🔴 ລາຍຈ່າຍ'}
+                      </span>
+                    </td>
+                    <td>{tx.category}</td>
+                    <td>{tx.walletName}</td>
+                    <td>{tx.customerName || '-'}</td>
+                    <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
+                      {tx.currency === 'LAK' ? `₭ ${tx.amount.toLocaleString()}` : `${tx.amount.toLocaleString()} ${tx.currency}`}
+                    </td>
+                    <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
+                      ₭ {convertedLAK.toLocaleString()}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <button className="table-link-btn" onClick={() => setActiveReceiptTx(tx)}>
+                          <Printer size={13} /> ໃບສຳຄັນ
+                        </button>
+                        {tx.slipUrl && (
+                          <button className="table-link-btn" onClick={() => setSelectedSlipUrl(tx.slipUrl)}>
+                            <ImageIcon size={13} /> ສະລິບ
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{tx.note || '-'}</td>
+                    <td>
+                      <button className="icon-btn-xs" style={{ color: '#f87171' }} onClick={() => onDeleteTransaction(tx.id)}>
+                        <X size={15} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Official Receipt / Voucher Print Modal */}
       {activeReceiptTx && (
