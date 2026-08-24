@@ -89,8 +89,7 @@ export const seasonalTrendsData = [
 export const investmentPlanningFunds = [
   { id: 'FUND-EMERGENCY', name: '🛡️ ກອງທຶນສຳຮອງສຸກເສີນ (Emergency Reserve Fund)', targetLAK: 50000000, currentLAK: 35000000, color: '#f59e0b', status: '🟢 70.0% ສຳເລັດ' },
   { id: 'FUND-LOAN-EXP', name: '📈 ກອງທຶນຂະຫຍາຍສິນເຊື່ອໃໝ່ (Loan Expansion Fund)', targetLAK: 150000000, currentLAK: 110000000, color: '#34d399', status: '🟢 73.3% ສຳເລັດ' },
-  { id: 'FUND-PROPERTY', name: '🏢 ກອງທຶນລົງທຶນຊື້ສິນຊັບ & ອາຄານ (Asset & Property Fund)', targetLAK: 300000000, currentLAK: 180000000, color: '#38bdf8', status: '🟢 60.0% ສຳເລັດ' },
-  { id: 'FUND-TECH', name: '🚀 ກອງທຶນພັດທະນາລະບົບ IT & AI (Tech Innovation Fund)', targetLAK: 40000000, currentLAK: 32000000, color: '#a855f7', status: '🟢 80.0% ສຳເລັດ' }
+  { id: 'FUND-PROPERTY', name: '🏢 ກອງທຶນລົງທຶນຊື້ສິນຊັບ & ອາຄານ (Asset & Property Fund)', targetLAK: 300000000, currentLAK: 180000000, color: '#38bdf8', status: '🟢 60.0% ສຳເລັດ' }
 ];
 
 export const breakEvenAnalysisData = {
