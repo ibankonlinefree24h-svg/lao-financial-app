@@ -49,7 +49,8 @@ import {
   Cpu,
   Sun,
   PiggyBank,
-  Briefcase
+  Briefcase,
+  Coins
 } from 'lucide-react';
 import {
   defaultExchangeRates,
@@ -61,7 +62,8 @@ import {
   financialForecastData,
   aiTaxAndHealthData,
   seasonalTrendsData,
-  investmentPlanningFunds
+  investmentPlanningFunds,
+  multiCurrencyRealBalances
 } from '../data/mockIncomeExpenses';
 import ReceiptModal from './ReceiptModal';
 
@@ -104,8 +106,6 @@ export default function IncomeExpenseView({
     if (m.income > maxIncomeVal) maxIncomeVal = m.income;
   });
 
-  const totalWalletLiquidityLAK = initialWallets.reduce((sum, w) => sum + w.balanceLAK, 0);
-
   const handleSaveRates = () => {
     setRates({
       ...rates,
@@ -134,7 +134,7 @@ export default function IncomeExpenseView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* 👑 1. ULTRA-LUXURY EXECUTIVE COMMAND HERO HEADER */}
+      {/* 👑 1. EXECUTIVE COMMAND HERO HEADER & INSTANT ACTION BAR */}
       <div
         className="glass-panel"
         style={{
@@ -172,7 +172,7 @@ export default function IncomeExpenseView({
               ⚡ ລະບົບບໍລິຫານ ລາຍຮັບ-ລາຍຈ່າຍ (Executive Financial Center)
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
-              ຕິດຕາມລາຍຮັບດອກເບ້ຍສິນເຊື່ອ, ລາຍຈ່າຍ, ເຄື່ອງມື AI ວິເຄາະ ແລະ ວາງແຜນການເງິນຄົບວົງຈອນ
+              ຕິດຕາມລາຍຮັບດອກເບ້ຍສິນເຊື່ອ, ລາຍຈ່າຍ, ຍອດເງິນສົດ 4 ສະກຸນ ແລະ ສະຫຼຸບລວມເປັນເງິນກີບ
             </p>
           </div>
         </div>
@@ -238,7 +238,7 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 2. Exchange Rate Bar */}
+      {/* 2. Exchange Rate Banner */}
       <div
         className="exchange-rate-banner"
         style={{
@@ -327,7 +327,80 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 3. Executive KPI Cards */}
+      {/* 🌟 3. REAL MULTI-CURRENCY CASH BALANCES & COMBINED LAK NET WORTH BANNER */}
+      <div className="glass-panel" style={{ padding: '22px 26px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(6, 182, 212, 0.35)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Coins size={28} color="#38bdf8" />
+            <div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>💵 ຍອດເງິນສົດຕົວຈິງແຕ່ລະສະກຸນ & ສະຫຼຸບລວມເປັນເງິນກີບ</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                ສະແດງຍອດເງິນສົດປະຈຸບັນຂອງ ₭ LAK, ฿ THB, $ USD, ¥ CNY ແລະ ສະຫຼຸບລວມເປັນເງິນກີບ LAK
+              </p>
+            </div>
+          </div>
+
+          <div className="glass-panel" style={{ padding: '12px 20px', background: 'rgba(16, 185, 129, 0.15)', borderLeft: '4px solid #10b981', borderRadius: '14px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700 }}>💎 ຍອດເງິນສົດລວມທຸກສະກຸນ (Combined Net Worth)</div>
+            <h2 style={{ fontSize: '1.6rem', color: '#34d399', margin: '2px 0 0', fontWeight: 800 }}>
+              ₭ {multiCurrencyRealBalances.totalCombinedLAK.toLocaleString()} LAK
+            </h2>
+          </div>
+        </div>
+
+        {/* 4 Currency Real Balance Cards Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+          {/* LAK Card */}
+          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #34d399', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.lak.flag} ເງິນກີບ LAK</span>
+              <span className="tag tag-emerald" style={{ fontSize: '0.72rem' }}>{multiCurrencyRealBalances.lak.percentOfTotal}% ຂອງຍອດລວມ</span>
+            </div>
+            <h3 style={{ fontSize: '1.4rem', color: '#34d399', margin: '8px 0 2px', fontWeight: 800 }}>
+              ₭ {multiCurrencyRealBalances.lak.amount.toLocaleString()}
+            </h3>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.lak.lakEquivalent.toLocaleString()}</div>
+          </div>
+
+          {/* THB Card */}
+          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #38bdf8', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.thb.flag} ເງິນບາດ THB</span>
+              <span className="tag tag-blue" style={{ fontSize: '0.72rem' }}>1 THB = {rates.thbToLak} ₭</span>
+            </div>
+            <h3 style={{ fontSize: '1.4rem', color: '#38bdf8', margin: '8px 0 2px', fontWeight: 800 }}>
+              ฿ {multiCurrencyRealBalances.thb.amount.toLocaleString()}
+            </h3>
+            <div style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 700 }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.thb.lakEquivalent.toLocaleString()} LAK</div>
+          </div>
+
+          {/* USD Card */}
+          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #a855f7', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.usd.flag} ເງິນໂດລາ USD</span>
+              <span className="tag tag-purple" style={{ fontSize: '0.72rem' }}>1 USD = {rates.usdToLak.toLocaleString()} ₭</span>
+            </div>
+            <h3 style={{ fontSize: '1.4rem', color: '#c084fc', margin: '8px 0 2px', fontWeight: 800 }}>
+              $ {multiCurrencyRealBalances.usd.amount.toLocaleString()}
+            </h3>
+            <div style={{ fontSize: '0.78rem', color: '#c084fc', fontWeight: 700 }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.usd.lakEquivalent.toLocaleString()} LAK</div>
+          </div>
+
+          {/* CNY Card */}
+          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #fbbf24', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.cny.flag} ເງິນຢວນ CNY</span>
+              <span className="tag tag-gold" style={{ fontSize: '0.72rem' }}>1 CNY = {rates.cnyToLak.toLocaleString()} ₭</span>
+            </div>
+            <h3 style={{ fontSize: '1.4rem', color: '#fbbf24', margin: '8px 0 2px', fontWeight: 800 }}>
+              ¥ {multiCurrencyRealBalances.cny.amount.toLocaleString()}
+            </h3>
+            <div style={{ fontSize: '0.78rem', color: '#fbbf24', fontWeight: 700 }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.cny.lakEquivalent.toLocaleString()} LAK</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Executive KPI Cards */}
       <div className="preview-grid" style={{ margin: 0 }}>
         <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1))', borderColor: 'rgba(16, 185, 129, 0.35)', borderRadius: '18px' }}>
           <div className="kpi-info">
@@ -371,9 +444,9 @@ export default function IncomeExpenseView({
         <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(126, 34, 206, 0.1))', borderColor: 'rgba(168, 85, 247, 0.35)', borderRadius: '18px' }}>
           <div className="kpi-info">
             <p>💳 ເງິນສົດ & ບັນຊີຄົງເຫຼືອລວມ (Liquidity)</p>
-            <h3 style={{ color: '#c084fc', fontSize: '1.5rem', fontWeight: 800 }}>₭ {totalWalletLiquidityLAK.toLocaleString()}</h3>
+            <h3 style={{ color: '#c084fc', fontSize: '1.5rem', fontWeight: 800 }}>₭ {multiCurrencyRealBalances.totalCombinedLAK.toLocaleString()}</h3>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 600 }}>
-              ລວມ BCEL One, JDB, LDB, APB & Cash
+              ລວມ ₭, ฿, $, ¥ ເປັນເງິນກີບ LAK
             </span>
           </div>
           <div className="kpi-icon" style={{ background: 'rgba(168, 85, 247, 0.2)', color: '#c084fc', borderRadius: '14px' }}>
@@ -382,7 +455,7 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 4. Sleek Categorized Sub-Tab Navigation Bar */}
+      {/* 5. Sleek Categorized Sub-Tab Navigation Bar */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', flexWrap: 'wrap' }}>
           <button
@@ -571,7 +644,7 @@ export default function IncomeExpenseView({
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '330px', padding: '26px 16px 16px', background: 'rgba(0,0,0,0.35)', borderRadius: '16px', gap: '6px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '330px', padding: '26px 16px 16px', background: 'rgba(0,0,0,0.35)', borderRadius: '14px', gap: '6px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
             {continuous24Months.map((d, i) => {
               const incomeHeight = Math.max(12, Math.round((d.income / maxIncomeVal) * 100));
               const expenseHeight = Math.max(12, Math.round((d.expense / maxIncomeVal) * 100));

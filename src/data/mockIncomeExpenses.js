@@ -1,4 +1,4 @@
-// Multi-Year Financial Dataset focused purely on Loan Interest Income & Direct Expenses (2025 - 2026)
+// Multi-Year Financial Dataset with Real 4-Currency Balances & Combined LAK Net Worth Summary
 
 export const defaultExchangeRates = {
   lak: 1,
@@ -19,6 +19,47 @@ export function convertToLAK(amount, currency, rates = defaultExchangeRates) {
   if (currUpper === 'RUB') return Math.round(amount * (rates.rubToLak || 275));
   return Math.round(amount);
 }
+
+// Actual Multi-Currency Cash & Bank Balances (4 Currencies)
+export const multiCurrencyRealBalances = {
+  lak: {
+    symbol: '₭',
+    currency: 'LAK',
+    amount: 45200000,
+    lakEquivalent: 45200000,
+    percentOfTotal: 14.4,
+    color: '#34d399',
+    flag: '🇱🇦'
+  },
+  thb: {
+    symbol: '฿',
+    currency: 'THB',
+    amount: 150000,
+    lakEquivalent: 94500000, // 150,000 * 630
+    percentOfTotal: 30.1,
+    color: '#38bdf8',
+    flag: '🇹🇭'
+  },
+  usd: {
+    symbol: '$',
+    currency: 'USD',
+    amount: 5000,
+    lakEquivalent: 112500000, // 5,000 * 22,500
+    percentOfTotal: 35.8,
+    color: '#a855f7',
+    flag: '🇺🇸'
+  },
+  cny: {
+    symbol: '¥',
+    currency: 'CNY',
+    amount: 20000,
+    lakEquivalent: 62000000, // 20,000 * 3,100
+    percentOfTotal: 19.7,
+    color: '#fbbf24',
+    flag: '🇨🇳'
+  },
+  totalCombinedLAK: 314200000 // 45.2M + 94.5M + 112.5M + 62M
+};
 
 // AI Tax & Financial Health Advisor Data
 export const aiTaxAndHealthData = {
