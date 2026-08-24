@@ -50,10 +50,7 @@ export default function IncomeExpenseView({
   exchangeRate,
   onUpdateExchangeRate
 }) {
-  const [activeSubTab, setActiveSubTab] = useState('MOM'); // 'MOM', 'LIFETIME', 'YOY', 'TRANSACTIONS'
-  const [selectedYear, setSelectedYear] = useState('ALL_36'); // 'ALL_36', '2026', '2025', '2024'
-  const [compareYearA, setCompareYearA] = useState('2025');
-  const [compareYearB, setCompareYearB] = useState('2026');
+  const [activeSubTab, setActiveSubTab] = useState('CONTINUOUS'); // 'CONTINUOUS', 'SUMMARY', 'YOY', 'TRANSACTIONS'
   const [activeTypeFilter, setActiveTypeFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSlipUrl, setSelectedSlipUrl] = useState(null);
@@ -75,23 +72,11 @@ export default function IncomeExpenseView({
     return Math.round(amount);
   };
 
-  const { allTimeSummary, yearlyHistory, monthlyDetails } = lifetimeFinancialData;
+  const { allTimeSummary, yearlyHistory, continuous24Months } = lifetimeFinancialData;
 
-  // Build combined 36 months data (2024, 2025, 2026)
-  const all36MonthsData = [
-    ...monthlyDetails['2024'].map((m) => ({ ...m, displayLabel: `'24 ${m.month}`, yearTag: '2024' })),
-    ...monthlyDetails['2025'].map((m) => ({ ...m, displayLabel: `'25 ${m.month}`, yearTag: '2025' })),
-    ...monthlyDetails['2026'].map((m) => ({ ...m, displayLabel: `'26 ${m.month}`, yearTag: '2026' }))
-  ];
-
-  const currentYearMonthlyData =
-    selectedYear === 'ALL_36'
-      ? all36MonthsData
-      : (monthlyDetails[selectedYear] || monthlyDetails['2026']).map((m) => ({ ...m, displayLabel: m.month, yearTag: selectedYear }));
-
-  let maxIncomeInView = 10000000;
-  currentYearMonthlyData.forEach((item) => {
-    if (item.income > maxIncomeInView) maxIncomeInView = item.income;
+  let maxIncomeVal = 10000000;
+  continuous24Months.forEach((m) => {
+    if (m.income > maxIncomeVal) maxIncomeVal = m.income;
   });
 
   const handleSaveRates = () => {
@@ -167,11 +152,11 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 2. Primary KPI Cards: All-Time Lifetime Financial Totals */}
+      {/* 2. Key Lifetime Financial Cards (Founding 2025 -> 2026 Present) */}
       <div className="preview-grid" style={{ margin: 0 }}>
         <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.1))', borderColor: 'rgba(16,185,129,0.3)' }}>
           <div className="kpi-info">
-            <p>🟢 ລາຍຮັບລວມຕັ້ງແຕ່ເລີ່ມປ່ອຍກູ້ (2024 - 2026)</p>
+            <p>🟢 ລາຍຮັບລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 - 2026)</p>
             <h3 style={{ color: '#34d399', fontSize: '1.45rem' }}>₭ {allTimeSummary.totalIncomeLAK.toLocaleString()}</h3>
             <span style={{ fontSize: '0.82rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
               <ArrowUpRight size={15} /> ດອກເບ້ຍສິນເຊື່ອ + ຄ່າທຳນຽມ (ຕັ້ງແຕ່ກໍ່ຕັ້ງ)
@@ -184,7 +169,7 @@ export default function IncomeExpenseView({
 
         <div className="glass-panel kpi-card">
           <div className="kpi-info">
-            <p>🔴 ລາຍຈ່າຍລວມຕັ້ງແຕ່ເລີ່ມປ່ອຍກູ້ (2024 - 2026)</p>
+            <p>🔴 ລາຍຈ່າຍລວມຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 - 2026)</p>
             <h3 style={{ color: '#f87171' }}>₭ {allTimeSummary.totalExpenseLAK.toLocaleString()}</h3>
             <span style={{ fontSize: '0.82rem', color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
               <ArrowDownRight size={15} /> Ads ໂຄສະນາ, ເງິນເດືອນ, ລະບົບ IT
@@ -197,7 +182,7 @@ export default function IncomeExpenseView({
 
         <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(2,132,199,0.1))', borderColor: 'rgba(6,182,212,0.3)' }}>
           <div className="kpi-info">
-            <p>💰 ກຳໄລສຸດທິລວມ (2024 - 2026)</p>
+            <p>💰 ກຳໄລສຸດທິລວມ (2025 - 2026)</p>
             <h3 style={{ color: '#38bdf8', fontSize: '1.45rem' }}>₭ {allTimeSummary.netProfitLAK.toLocaleString()}</h3>
             <span style={{ fontSize: '0.82rem', color: 'var(--accent-cyan)', marginTop: '6px', fontWeight: 700 }}>
               ອັດຕາກຳໄລລວມ: {allTimeSummary.overallProfitMarginPercent}%
@@ -222,30 +207,22 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* Main Navigation Sub-Tabs */}
+      {/* Navigation Sub-Tabs */}
       <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', flexWrap: 'wrap' }}>
         <button
-          className={`filter-pill-btn ${activeSubTab === 'MOM' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('MOM')}
+          className={`filter-pill-btn ${activeSubTab === 'CONTINUOUS' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('CONTINUOUS')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          📊 1. ກຣາຟຟິກລາຍຮັບ-ລາຍຈ່າຍ 12 ເດືອນ & % MoM (ປີກໍ່ຕັ້ງ ຫາ ປະຈຸບັນ)
+          📊 1. ກຣາຟຟິກລຽງກັນຕັ້ງແຕ່ກໍ່ຕັ້ງ 2025 - 2026 ປະຈຸບັນ
         </button>
 
         <button
-          className={`filter-pill-btn ${activeSubTab === 'LIFETIME' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('LIFETIME')}
+          className={`filter-pill-btn ${activeSubTab === 'SUMMARY' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('SUMMARY')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          🌐 2. ຍອດລວມຕັ້ງແຕ່ເລີ່ມປ່ອຍກູ້ (All-Time Overview)
-        </button>
-
-        <button
-          className={`filter-pill-btn ${activeSubTab === 'YOY' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('YOY')}
-          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
-        >
-          ⚖️ 3. ປຽບທຽບ ປີໃສ່ປີ (YoY Comparison: 2024-2026)
+          🌐 2. ສະຫຼຸບລວມ ປີ 2025 vs 2026
         </button>
 
         <button
@@ -253,123 +230,113 @@ export default function IncomeExpenseView({
           onClick={() => setActiveSubTab('TRANSACTIONS')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          💳 4. ບັນທຶກລາຍການ ລາຍຮັບ-ລາຍຈ່າຍ ({transactions.length})
+          💳 3. ບັນທຶກລາຍການ ລາຍຮັບ-ລາຍຈ່າຍ ({transactions.length})
         </button>
       </div>
 
-      {/* TAB 1: 📊 12-MONTH GRAPHICS & MOM GROWTH (Supports ALL 36 MONTHS since founding!) */}
-      {activeSubTab === 'MOM' && (
+      {/* 🌟 MAIN FEATURE: CONTINUOUS 24-MONTH STREAM GRAPHIC CHART (2025 - 2026) */}
+      {activeSubTab === 'CONTINUOUS' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="glass-panel" style={{ padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <BarChart3 size={28} color="#34d399" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <BarChart3 size={30} color="#34d399" />
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>
-                    📊 ກຣາຟຟິກລາຍຮັບ-ລາຍຈ່າຍ 12 ເດືອນ & % ເຕີບໂຕ MoM
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                    📊 ກຣາຟຟິກລາຍຮັບ-ລາຍຈ່າຍ ລຽງກັນຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2025 ຫາ 2026 ປະຈຸບັນ)
                   </h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    {selectedYear === 'ALL_36'
-                      ? '🌐 ສະແດງຂໍ້ມູນຄົບ 36 ເດືອນ ຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງປີ 2024 ຫາ ປະຈຸບັນ 2026'
-                      : `ສະແດງຂໍ້ມູນ 12 ເດືອນ ຂອງປີ ${selectedYear}`}
+                  <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                    ສະແດງທັງໝົດ 24 ເດືອນລຽງກັນ: 🔷 12 ເດືອນປີກໍ່ຕັ້ງ 2025 | 🟢 12 ເດືອນປີປະຈຸບັນ 2026 ພ້ອມ % ເຕີບໂຕ MoM
                   </p>
                 </div>
               </div>
 
-              {/* Year Selector with All 36 Months Option */}
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
-                <Globe size={16} color="var(--accent-purple)" />
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ເລືອກໄລຍະເວລາ:</span>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  style={{ padding: '6px 12px', borderRadius: '6px', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', fontWeight: 800, fontSize: '0.88rem' }}
-                >
-                  <option value="ALL_36">🌐 36 ເດືອນ ຕັ້ງແຕ່ເລີ່ມກໍ່ຕັ້ງ (2024 - 2026)</option>
-                  <option value="2026">ປີ 2026 (ປະຈຸບັນ)</option>
-                  <option value="2025">ປີ 2025</option>
-                  <option value="2024">ປີ 2024 (ປີກໍ່ຕັ້ງ)</option>
-                </select>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <span className="tag tag-blue" style={{ fontSize: '0.82rem' }}>
+                  📅 ປີກໍ່ຕັ້ງ 2025: ₭ 182.4M
+                </span>
+                <span className="tag tag-emerald" style={{ fontSize: '0.82rem' }}>
+                  🟢 ປີປະຈຸບັນ 2026: ₭ 288.6M (+58.2%)
+                </span>
               </div>
             </div>
 
-            {/* 36-Month / 12-Month Dynamic Graphic Bar Visualizer */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '320px', padding: '24px 16px 16px', background: 'rgba(0,0,0,0.3)', borderRadius: '14px', gap: '8px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
-              {currentYearMonthlyData.map((d, i) => {
-                const incomeHeight = Math.max(12, Math.round((d.income / maxIncomeInView) * 100));
-                const expenseHeight = Math.max(12, Math.round((d.expense / maxIncomeInView) * 100));
+            {/* Continuous 24-Month Bar Chart */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '330px', padding: '26px 16px 16px', background: 'rgba(0,0,0,0.35)', borderRadius: '14px', gap: '6px', overflowX: 'auto', border: '1px solid var(--border-color)' }}>
+              {continuous24Months.map((d, i) => {
+                const incomeHeight = Math.max(12, Math.round((d.income / maxIncomeVal) * 100));
+                const expenseHeight = Math.max(12, Math.round((d.expense / maxIncomeVal) * 100));
+                const is2026 = d.year === '2026';
 
                 return (
-                  <div key={i} style={{ flex: 1, minWidth: selectedYear === 'ALL_36' ? '70px' : '65px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                  <div key={i} style={{ flex: 1, minWidth: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
                     {/* Growth Tag */}
-                    <span style={{ fontSize: '0.68rem', color: d.growthMoM.startsWith('+') ? '#34d399' : '#f87171', fontWeight: 800, marginBottom: '6px' }}>
+                    <span style={{ fontSize: '0.66rem', color: d.growthMoM.startsWith('+') ? '#34d399' : d.growthMoM === 'ເລີ່ມຕົ້ນ' ? '#818cf8' : '#f87171', fontWeight: 800, marginBottom: '6px' }}>
                       {d.growthMoM}
                     </span>
 
-                    {/* Bars Pair Container */}
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-end', height: '210px', width: '100%', justifyContent: 'center' }}>
+                    {/* Bar Container */}
+                    <div style={{ display: 'flex', gap: '3px', alignItems: 'flex-end', height: '210px', width: '100%', justifyContent: 'center' }}>
                       {/* Income Bar */}
                       <div
                         style={{
-                          width: '42%',
-                          background: d.yearTag === '2026' ? 'linear-gradient(180deg, #34d399, #059669)' : d.yearTag === '2025' ? 'linear-gradient(180deg, #38bdf8, #0284c7)' : 'linear-gradient(180deg, #a855f7, #7e22ce)',
+                          width: '44%',
+                          background: is2026
+                            ? 'linear-gradient(180deg, #34d399, #059669)'
+                            : 'linear-gradient(180deg, #38bdf8, #0284c7)',
                           height: `${incomeHeight}%`,
                           borderRadius: '4px 4px 0 0',
-                          boxShadow: '0 0 10px rgba(16, 185, 129, 0.3)'
+                          boxShadow: is2026 ? '0 0 10px rgba(16, 185, 129, 0.35)' : '0 0 10px rgba(56, 189, 248, 0.35)'
                         }}
-                        title={`${d.displayLabel}: ລາຍຮັບ ₭ ${d.income.toLocaleString()}`}
+                        title={`${d.month}: ລາຍຮັບ ₭ ${d.income.toLocaleString()}`}
                       />
                       {/* Expense Bar */}
                       <div
                         style={{
-                          width: '42%',
+                          width: '44%',
                           background: 'linear-gradient(180deg, #f87171, #dc2626)',
                           height: `${expenseHeight}%`,
                           borderRadius: '4px 4px 0 0',
                           boxShadow: '0 0 10px rgba(239, 68, 68, 0.3)'
                         }}
-                        title={`${d.displayLabel}: ລາຍຈ່າຍ ₭ ${d.expense.toLocaleString()}`}
+                        title={`${d.month}: ລາຍຈ່າຍ ₭ ${d.expense.toLocaleString()}`}
                       />
                     </div>
 
-                    {/* Month Name & Year Tag */}
-                    <span style={{ fontSize: '0.72rem', marginTop: '10px', color: 'var(--text-primary)', fontWeight: 700, textAlign: 'center', whiteSpace: 'nowrap' }}>
-                      {d.displayLabel}
+                    {/* Month Label */}
+                    <span style={{ fontSize: '0.7rem', marginTop: '10px', color: is2026 ? '#34d399' : '#38bdf8', fontWeight: 700, textAlign: 'center', whiteSpace: 'nowrap' }}>
+                      {d.shortMonth}
                     </span>
                   </div>
                 );
               })}
             </div>
 
-            {/* Legend & Summary Footer */}
+            {/* Visual Legend */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '14px 18px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', gap: '16px', fontSize: '0.82rem', fontWeight: 700 }}>
-                <span style={{ color: '#34d399' }}>🟢 ປີ 2026 (ສີຂຽວ)</span>
-                <span style={{ color: '#38bdf8' }}>🔷 ປີ 2025 (ສີຟ້າ)</span>
-                <span style={{ color: '#c084fc' }}>🟣 ປີ 2024 (ສີມ່ວງກໍ່ຕັ້ງ)</span>
+              <div style={{ display: 'flex', gap: '18px', fontSize: '0.85rem', fontWeight: 700 }}>
+                <span style={{ color: '#38bdf8' }}>🔷 ປີກໍ່ຕັ້ງ 2025 (12 ເດືອນ - ສີຟ້າ)</span>
+                <span style={{ color: '#34d399' }}>🟢 ປີປະຈຸບັນ 2026 (12 ເດືອນ - ສີຂຽວ)</span>
                 <span style={{ color: '#f87171' }}>🔴 ລາຍຈ່າຍ (ສີແດງ)</span>
               </div>
 
-              <span style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 700 }}>
-                💰 ຍອດລາຍຮັບລວມໃນ view ນີ້: ₭ {currentYearMonthlyData.reduce((acc, curr) => acc + curr.income, 0).toLocaleString()}
+              <span style={{ fontSize: '0.88rem', color: '#38bdf8', fontWeight: 800 }}>
+                💰 ລາຍຮັບລວມ 24 ເດືອນ: ₭ {allTimeSummary.totalIncomeLAK.toLocaleString()}
               </span>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: 🌐 ALL-TIME LIFETIME OVERVIEW & YEARLY BREAKDOWN */}
-      {activeSubTab === 'LIFETIME' && (
+      {/* TAB 2: 🌐 YEARLY SUMMARY (2025 vs 2026) */}
+      {activeSubTab === 'SUMMARY' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="glass-panel" style={{ padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <History size={24} color="#34d399" />
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>📅 ສະຫຼຸບລາຍຮັບ-ລາຍຈ່າຍ ແຍກຕາມແຕ່ລະປີ (2024, 2025, 2026)</h3>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>📅 ສະຫຼຸບລາຍຮັບ-ລາຍຈ່າຍ ແຍກຕາມແຕ່ລະປີ (2025 & 2026)</h3>
               </div>
-              <span className="tag tag-emerald" style={{ fontSize: '0.8rem' }}>
-                ສະສົມ 3 ປີລວມ: ₭ {allTimeSummary.netProfitLAK.toLocaleString()} (ກຳໄລ {allTimeSummary.overallProfitMarginPercent}%)
-              </span>
             </div>
 
             <div className="table-responsive-wrapper">
@@ -410,83 +377,7 @@ export default function IncomeExpenseView({
         </div>
       )}
 
-      {/* TAB 3: ⚖️ YEAR-OVER-YEAR (YoY) COMPARISON (2024 vs 2025 vs 2026) */}
-      {activeSubTab === 'YOY' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Scale size={24} color="#38bdf8" />
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>⚖️ ການປຽບທຽບ ປີໃສ່ປີ (Year-over-Year / YoY Comparison)</h3>
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ປຽບທຽບ:</span>
-                <select
-                  value={compareYearA}
-                  onChange={(e) => setCompareYearA(e.target.value)}
-                  style={{ padding: '6px 10px', borderRadius: '6px', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', fontWeight: 700 }}
-                >
-                  <option value="2024">ປີ 2024</option>
-                  <option value="2025">ປີ 2025</option>
-                </select>
-                <span style={{ fontSize: '0.85rem' }}>ໃສ່</span>
-                <select
-                  value={compareYearB}
-                  onChange={(e) => setCompareYearB(e.target.value)}
-                  style={{ padding: '6px 10px', borderRadius: '6px', background: 'var(--surface-color)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', fontWeight: 700 }}
-                >
-                  <option value="2025">ປີ 2025</option>
-                  <option value="2026">ປີ 2026</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Side-by-Side Comparison Cards */}
-            {(() => {
-              const dataA = yearlyHistory.find((y) => y.year === compareYearA) || yearlyHistory[0];
-              const dataB = yearlyHistory.find((y) => y.year === compareYearB) || yearlyHistory[2];
-
-              const incomeDiff = dataB.income - dataA.income;
-              const incomeDiffPercent = ((incomeDiff / dataA.income) * 100).toFixed(1);
-              const profitDiff = dataB.profit - dataA.profit;
-              const profitDiffPercent = ((profitDiff / dataA.profit) * 100).toFixed(1);
-
-              return (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-                  <div className="glass-panel" style={{ padding: '20px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #6366f1' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ປີ {compareYearA}</div>
-                    <h3 style={{ fontSize: '1.25rem', color: '#818cf8', margin: '6px 0 10px' }}>₭ {dataA.income.toLocaleString()}</h3>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                      ລາຍຈ່າຍ: ₭ {dataA.expense.toLocaleString()} | ກຳໄລ: ₭ {dataA.profit.toLocaleString()}
-                    </div>
-                  </div>
-
-                  <div className="glass-panel" style={{ padding: '20px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #10b981' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ປີ {compareYearB}</div>
-                    <h3 style={{ fontSize: '1.25rem', color: '#34d399', margin: '6px 0 10px' }}>₭ {dataB.income.toLocaleString()}</h3>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                      ລາຍຈ່າຍ: ₭ {dataB.expense.toLocaleString()} | ກຳໄລ: ₭ {dataB.profit.toLocaleString()}
-                    </div>
-                  </div>
-
-                  <div className="glass-panel" style={{ padding: '20px', background: 'rgba(16,185,129,0.1)', borderLeft: '4px solid #38bdf8' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ສ່ວນເຕີບໂຕ (YoY Growth Variance)</div>
-                    <h3 style={{ fontSize: '1.25rem', color: '#38bdf8', margin: '6px 0 10px' }}>
-                      +₭ {incomeDiff.toLocaleString()} ({incomeDiffPercent > 0 ? `+${incomeDiffPercent}%` : `${incomeDiffPercent}%`})
-                    </h3>
-                    <div style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>
-                      ກຳໄລເພີ່ມຂຶ້ນ: +₭ {profitDiff.toLocaleString()} (+{profitDiffPercent}%)
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: 💳 LIVE TRANSACTIONS LOG & AI SLIP READER */}
+      {/* TAB 3: 💳 LIVE TRANSACTIONS LOG */}
       {activeSubTab === 'TRANSACTIONS' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="glass-panel" style={{ padding: '20px' }}>
@@ -558,7 +449,6 @@ export default function IncomeExpenseView({
                 <tbody>
                   {filteredTransactions.map((tx) => {
                     const isIncome = tx.type === 'INCOME';
-                    const isExpense = tx.type === 'EXPENSE';
                     const convertedLAK = convert3ToLAK(tx.amount, tx.currency);
 
                     return (
