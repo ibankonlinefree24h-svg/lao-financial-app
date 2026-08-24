@@ -1,4 +1,4 @@
-// Comprehensive Multi-Year Financial Dataset with Granular Categorical & Monthly Breakdowns (2025 - 2026)
+// Complete Multi-Year Financial Dataset with Forecasting, Budget Alerts, Break-Even & Statement Reconciliation
 
 export const defaultExchangeRates = {
   lak: 1,
@@ -20,7 +20,22 @@ export function convertToLAK(amount, currency, rates = defaultExchangeRates) {
   return Math.round(amount);
 }
 
-// Complete Granular Financial Dataset
+// Break-Even & Forecasting Analytics Data
+export const breakEvenAnalysisData = {
+  monthlyFixedExpenseLAK: 6800000, // Ads + Staff Salaries + IT Cloud/Office
+  avgInterestPerLoanLAK: 500000,   // Average interest earned per loan contract
+  contractsToBreakEven: 14,        // 14 contracts needed to cover 6.8M LAK expenses
+  currentActiveLoans: 56,
+  breakEvenSafetyMarginPercent: 300, // 300% safety buffer over break-even point
+};
+
+// 3-Month Financial Projection (Q4 2026 Forecast)
+export const financialForecastData = [
+  { month: 'ກັນຍາ 26 (ຄາດກາ)', projectedIncome: 35000000, projectedExpense: 6200000, projectedProfit: 28800000, confidence: '95%' },
+  { month: 'ຕຸລາ 26 (ຄາດກາ)', projectedIncome: 38000000, projectedExpense: 6400000, projectedProfit: 31600000, confidence: '92%' },
+  { month: 'ພະຈິກ 26 (ຄາດກາ)', projectedIncome: 41000000, projectedExpense: 6600000, projectedProfit: 34400000, confidence: '88%' }
+];
+
 export const lifetimeFinancialData = {
   allTimeSummary: {
     totalIncomeLAK: 471000000,
@@ -50,7 +65,6 @@ export const lifetimeFinancialData = {
       loanCount: 56
     }
   ],
-  // 24 Months Granular Breakdown Data
   continuous24Months: [
     // 2025
     { month: 'ມັງກອນ 25', shortMonth: 'ມ.ກ 25', year: '2025', interestIncome: 9800000, feeIncome: 1400000, income: 11200000, adsExpense: 1500000, salaryExpense: 1200000, officeExpense: 800000, expense: 3500000, profit: 7700000, margin: 68.8, growthMoM: 'ເລີ່ມຕົ້ນ' },
@@ -83,19 +97,19 @@ export const lifetimeFinancialData = {
 };
 
 export const initialWallets = [
-  { id: 'W-CASH', name: 'ເງິນສົດ (Cash Wallet)', type: 'CASH', icon: '💵', balanceLAK: 8400000, color: '#f59e0b', accountNo: 'CASH-VAULT' },
-  { id: 'W-BCEL', name: 'BCEL One (ທະນາຄານການຄ້າ)', type: 'BANK', icon: '🏦', balanceLAK: 45200000, color: '#6366f1', accountNo: '160-12-0001234-001' },
-  { id: 'W-LDB', name: 'LDB Trust (ທະນາຄານພັດທະນາລາວ)', type: 'BANK', icon: '🏬', balanceLAK: 12000000, color: '#06b6d4', accountNo: '020-55-0011223-001' },
-  { id: 'W-JDB', name: 'JDB (ທະນາຄານ ຈອມເພັດ/ຈອຍທ໌)', type: 'BANK', icon: '🏛️', balanceLAK: 18500000, color: '#a855f7', accountNo: '550-10-8889911-002' },
-  { id: 'W-APB', name: 'APB (ທະນາຄານສົ່ງເສີມກorigິກຳ)', type: 'BANK', icon: '🌾', balanceLAK: 6800000, color: '#10b981', accountNo: '880-99-223311-001' }
+  { id: 'W-CASH', name: 'ເງິນສົດ (Cash Vault)', type: 'CASH', icon: '💵', balanceLAK: 8400000, color: '#f59e0b', accountNo: 'CASH-VAULT', status: '✅ Reconciled ຕົງ 100%' },
+  { id: 'W-BCEL', name: 'BCEL One (ທະນາຄານການຄ້າ)', type: 'BANK', icon: '🏦', balanceLAK: 45200000, color: '#6366f1', accountNo: '160-12-0001234-001', status: '✅ Statement Verified' },
+  { id: 'W-LDB', name: 'LDB Trust (ທະນາຄານພັດທະນາລາວ)', type: 'BANK', icon: '🏬', balanceLAK: 12000000, color: '#06b6d4', accountNo: '020-55-0011223-001', status: '✅ Statement Verified' },
+  { id: 'W-JDB', name: 'JDB (ທະນາຄານ ຈອມເພັດ/ຈອຍທ໌)', type: 'BANK', icon: '🏛️', balanceLAK: 18500000, color: '#a855f7', accountNo: '550-10-8889911-002', status: '✅ Statement Verified' },
+  { id: 'W-APB', name: 'APB (ທະນາຄານສົ່ງເສີມກorigິກຳ)', type: 'BANK', icon: '🌾', balanceLAK: 6800000, color: '#10b981', accountNo: '880-99-223311-001', status: '✅ Statement Verified' }
 ];
 
 export const expenseCategories = [
-  { id: 'EXP-ADS', name: '📢 ຄ່າ Ads ໂຄສະນາ (Facebook/TikTok)', icon: '📢', color: '#ef4444', budgetLAK: 4000000, totalSpentLAK: 2900000 },
-  { id: 'EXP-SALARY', name: '👥 ເງິນເດືອນພະນັກງານ', icon: '👥', color: '#6366f1', budgetLAK: 8000000, totalSpentLAK: 2700000 },
-  { id: 'EXP-SERVER', name: '🏠 ຄ່າເຊົ່າ & IT Server Cloud', icon: '🏠', color: '#8b5cf6', budgetLAK: 2500000, totalSpentLAK: 1200000 },
-  { id: 'EXP-FUEL', name: '🚗 ຄ່ານ້ຳມັນ & ຕິດຕາມໜີ້', icon: '🚗', color: '#3b82f6', budgetLAK: 1800000, totalSpentLAK: 850000 },
-  { id: 'EXP-FOOD', name: '🍜 ອາຫານ & ຮັບຮອງລູກຄ້າ', icon: '🍜', color: '#f97316', budgetLAK: 3500000, totalSpentLAK: 1100000 }
+  { id: 'EXP-ADS', name: '📢 ຄ່າ Ads ໂຄສະນາ (Facebook/TikTok)', icon: '📢', color: '#ef4444', budgetLAK: 4000000, totalSpentLAK: 2900000, status: '🟢 Safe (72.5%)' },
+  { id: 'EXP-SALARY', name: '👥 ເງິນເດືອນພະນັກງານ', icon: '👥', color: '#6366f1', budgetLAK: 8000000, totalSpentLAK: 2700000, status: '🟢 Safe (33.7%)' },
+  { id: 'EXP-SERVER', name: '🏠 ຄ່າເຊົ່າ & IT Server Cloud', icon: '🏠', color: '#8b5cf6', budgetLAK: 2500000, totalSpentLAK: 1200000, status: '🟢 Safe (48.0%)' },
+  { id: 'EXP-FUEL', name: '🚗 ຄ່ານ້ຳມັນ & ຕິດຕາມໜີ້', icon: '🚗', color: '#3b82f6', budgetLAK: 1800000, totalSpentLAK: 850000, status: '🟢 Safe (47.2%)' },
+  { id: 'EXP-FOOD', name: '🍜 ອາຫານ & ຮັບຮອງລູກຄ້າ', icon: '🍜', color: '#f97316', budgetLAK: 3500000, totalSpentLAK: 1100000, status: '🟢 Safe (31.4%)' }
 ];
 
 export const incomeCategories = [

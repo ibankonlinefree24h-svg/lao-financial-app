@@ -43,14 +43,18 @@ import {
   Phone,
   MapPin,
   CheckSquare,
-  FileText
+  FileText,
+  AlertTriangle,
+  Compass
 } from 'lucide-react';
 import {
   defaultExchangeRates,
   initialWallets,
   expenseCategories,
   incomeCategories,
-  lifetimeFinancialData
+  lifetimeFinancialData,
+  breakEvenAnalysisData,
+  financialForecastData
 } from '../data/mockIncomeExpenses';
 import ReceiptModal from './ReceiptModal';
 
@@ -61,13 +65,13 @@ export default function IncomeExpenseView({
   exchangeRate,
   onUpdateExchangeRate
 }) {
-  const [activeSubTab, setActiveSubTab] = useState('GRANULAR_TABLE'); // 'GRANULAR_TABLE', 'CONTINUOUS_CHART', 'WALLETS', 'TRANSACTIONS'
+  const [activeSubTab, setActiveSubTab] = useState('GRANULAR_TABLE'); // 'GRANULAR_TABLE', 'CONTINUOUS_CHART', 'PROJECTION_BREAKEVEN', 'BUDGET_STATEMENT', 'WALLETS', 'TRANSACTIONS'
   const [activeTypeFilter, setActiveTypeFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSlipUrl, setSelectedSlipUrl] = useState(null);
   const [activeReceiptTx, setActiveReceiptTx] = useState(null);
-  const [activeDetailTx, setActiveDetailTx] = useState(null); // Deep Transaction Detail Drawer
-  const [activeMonthAudit, setActiveMonthAudit] = useState(null); // Deep Monthly Audit Drawer
+  const [activeDetailTx, setActiveDetailTx] = useState(null);
+  const [activeMonthAudit, setActiveMonthAudit] = useState(null);
   const [isEditingRate, setIsEditingRate] = useState(false);
 
   // Exchange Rates State
@@ -122,7 +126,75 @@ export default function IncomeExpenseView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* 1. Exchange Rate Bar */}
+      {/* 🌟 1. PROMINENT QUICK ACTION FLOATING HEADER BAR (ປຸ່ມບັນທຶກລາຍຮັບ-ລາຍຈ່າຍເຫັນງ່າຍດາຍ 100%) */}
+      <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.12))', border: '1px solid rgba(16, 185, 129, 0.4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', boxShadow: '0 8px 25px rgba(0,0,0,0.3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #10b981, #059669)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}>
+            <Zap size={22} />
+          </div>
+          <div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+              ⚡ ບັນທຶກທຸລະກຳດ່ວນ (Instant Action Bar)
+            </h3>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>
+              ກົດບັນທຶກລາຍຮັບ, ລາຍຈ່າຍ, ຫຼື ໂອນຂ້າມບັນຊີ ໄດ້ທັນທີ 1-Click
+            </p>
+          </div>
+        </div>
+
+        {/* 3 Prominent Action Buttons */}
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <button
+            className="btn-primary-emerald"
+            style={{ padding: '12px 22px', fontSize: '0.95rem', fontWeight: 800, boxShadow: '0 6px 20px rgba(16, 185, 129, 0.45)' }}
+            onClick={() => onAddTransaction('INCOME')}
+          >
+            <PlusCircle size={20} /> + ບັນທຶກລາຍຮັບ (Income)
+          </button>
+
+          <button
+            style={{
+              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+              color: 'white',
+              padding: '12px 22px',
+              borderRadius: '12px',
+              fontWeight: 800,
+              fontSize: '0.95rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 6px 20px rgba(239, 68, 68, 0.45)',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+            onClick={() => onAddTransaction('EXPENSE')}
+          >
+            <MinusCircle size={20} /> - ບັນທຶກລາຍຈ່າຍ (Expense)
+          </button>
+
+          <button
+            style={{
+              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              color: 'white',
+              padding: '12px 20px',
+              borderRadius: '12px',
+              fontWeight: 700,
+              fontSize: '0.92rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 6px 20px rgba(99, 102, 241, 0.4)',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+            onClick={() => onAddTransaction('TRANSFER')}
+          >
+            <ArrowRightLeft size={18} /> 🔄 ໂອນຍ້າຍບັນຊີ
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Exchange Rate Bar */}
       <div className="exchange-rate-banner" style={{ background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9))', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '14px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
@@ -181,7 +253,7 @@ export default function IncomeExpenseView({
         </div>
       </div>
 
-      {/* 2. Key Master KPI Cards */}
+      {/* 3. Key Master KPI Cards */}
       <div className="preview-grid" style={{ margin: 0 }}>
         <div className="glass-panel kpi-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1))', borderColor: 'rgba(16, 185, 129, 0.35)' }}>
           <div className="kpi-info">
@@ -243,7 +315,7 @@ export default function IncomeExpenseView({
           onClick={() => setActiveSubTab('GRANULAR_TABLE')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          📑 1. ຕາຕະລາງລາຍລະອຽດ 24 ເດືອນ (24-Month Granular Breakdown Table)
+          📑 1. ຕາຕະລາງລາຍລະອຽດ 24 ເດືອນ (Granular Table)
         </button>
 
         <button
@@ -255,11 +327,27 @@ export default function IncomeExpenseView({
         </button>
 
         <button
+          className={`filter-pill-btn ${activeSubTab === 'PROJECTION_BREAKEVEN' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('PROJECTION_BREAKEVEN')}
+          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
+        >
+          🔮 3. ປະມານການກຳໄລ 3 ເດືອນ & Break-Even Point
+        </button>
+
+        <button
+          className={`filter-pill-btn ${activeSubTab === 'BUDGET_STATEMENT' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('BUDGET_STATEMENT')}
+          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
+        >
+          💡 4. ເຕືອນງົບປະມານ & Statement Reconciliation
+        </button>
+
+        <button
           className={`filter-pill-btn ${activeSubTab === 'WALLETS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('WALLETS')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          💳 3. ບັນຊີ/Wallets ({initialWallets.length})
+          💳 5. ບັນຊີ/Wallets ({initialWallets.length})
         </button>
 
         <button
@@ -267,7 +355,7 @@ export default function IncomeExpenseView({
           onClick={() => setActiveSubTab('TRANSACTIONS')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          ⚡ 4. ລາຍການທຸລະກຳ Real-Time ({transactions.length})
+          ⚡ 6. ລາຍການທຸລະກຳ Real-Time ({transactions.length})
         </button>
       </div>
 
@@ -282,7 +370,7 @@ export default function IncomeExpenseView({
                   📑 ຕາຕະລາງລາຍລະອຽດ ລາຍຮັບ-ລາຍຈ່າຍ ຄົບ 24 ເດືອນ (2025 - 2026)
                 </h3>
                 <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-                  ແຍກລາຍລະອຽດດອກເບ້ຍ, ຄ່າທຳນຽມ, ຄ່າ Ads, ເງິນເດືອນ, ຄ່າເຊົ່າ, ກຳໄລສຸດທິ, % ກຳໄລ ແລະ % MoM (ກົດທີ່ເດືອນເພື່ອເບິ່ງ Audit)
+                  ແຍກລາຍລະອຽດດອກເບ້ຍ, ຄ່າທຳນຽມ, ຄ່າ Ads, ເງິນເດືອນ, ຄ່າເຊົ່າ, ກຳໄລສຸດທິ, % ກຳໄລ ແລະ % MoM
                 </p>
               </div>
             </div>
@@ -300,7 +388,7 @@ export default function IncomeExpenseView({
             <table className="customer-full-table" style={{ fontSize: '0.84rem' }}>
               <thead>
                 <tr>
-                  <th style={{ minWidth: '110px' }}>ເດືອນ/ປີ (ກົດເບິ່ງ)</th>
+                  <th style={{ minWidth: '110px' }}>ເດືອນ/ປີ</th>
                   <th style={{ color: '#34d399' }}>🟢 ດອກເບ້ຍສິນເຊື່ອ</th>
                   <th style={{ color: '#38bdf8' }}>🟢 ຄ່າທຳນຽມ</th>
                   <th style={{ color: '#10b981', fontWeight: 800 }}>🟢 ລາຍຮັບລວມ</th>
@@ -439,7 +527,180 @@ export default function IncomeExpenseView({
         </div>
       )}
 
-      {/* SUB-TAB 3: WALLETS */}
+      {/* 🌟 SUB-TAB 3: 3-MONTH FINANCIAL PROJECTION & BREAK-EVEN ANALYSIS */}
+      {activeSubTab === 'PROJECTION_BREAKEVEN' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Break-Even Analysis Module */}
+          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(30, 41, 59, 0.9))', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
+              <Target size={28} color="#38bdf8" />
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🎯 ລະບົບວິເຄາະຈຸດຄຸ້ມທຶນ (Break-Even Point Analysis)</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  ຄຳນວນຈຳນວນສັນຍາສິນເຊື່ອຂັ້ນຕ່ຳທີ່ຕ້ອງມີ ເພື່ອໃຫ້ກຸ້ມຄ່າໃຊ້ຈ່າຍຄົງທີ່ປະຈຳເດືອນ
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #ef4444' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ຄ່າໃຊ້ຈ່າຍຄົງທີ່ປະຈຳເດືອນ (Fixed Costs)</div>
+                <h3 style={{ fontSize: '1.3rem', color: '#f87171', margin: '6px 0 0', fontWeight: 800 }}>
+                  ₭ {breakEvenAnalysisData.monthlyFixedExpenseLAK.toLocaleString()} / ເດືອນ
+                </h3>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  Ads ໂຄສະນາ + ເງິນເດືອນ + IT Server
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #a855f7' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ຈຳນວນສັນຍາກຸ້ມທຶນ (Break-Even Loans)</div>
+                <h3 style={{ fontSize: '1.3rem', color: '#c084fc', margin: '6px 0 0', fontWeight: 800 }}>
+                  {breakEvenAnalysisData.contractsToBreakEven} ສັນຍາ / ເດືອນ
+                </h3>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  ດອກເບ້ຍສະເລ່ຍ ₭ 500,000 / ສັນຍາ
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '16px', background: 'rgba(16,185,129,0.12)', borderLeft: '4px solid #10b981' }}>
+                <div style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: 700 }}>ສັນຍາປະຈຸບັນ vs ຈຸດຄຸ້ມທຶນ</div>
+                <h3 style={{ fontSize: '1.3rem', color: '#34d399', margin: '6px 0 0', fontWeight: 800 }}>
+                  {breakEvenAnalysisData.currentActiveLoans} ສັນຍາ (ປອດໄພ 100%)
+                </h3>
+                <div style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700, marginTop: '4px' }}>
+                  🟢 ສູງກວ່າຈຸດຄຸ້ມທຶນ {breakEvenAnalysisData.breakEvenSafetyMarginPercent}% (Safety Buffer)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3-Month Projection Module */}
+          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
+              <Compass size={28} color="#34d399" />
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🔮 ປະມານການກຳໄລລ່ວງໜ້າ 3 ເດືອນ (3-Month Financial Projection)</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  ຄາດກາລາຍຮັບ, ລາຍຈ່າຍ, ແລະ ກຳໄລສຸດທິໄຕມາດ 4 (ກັນຍາ, ຕຸລາ, ພະຈິກ 2026)
+                </p>
+              </div>
+            </div>
+
+            <div className="table-responsive-wrapper">
+              <table className="customer-full-table">
+                <thead>
+                  <tr>
+                    <th>ເດືອນຄາດກາ (Projection Month)</th>
+                    <th style={{ color: '#34d399' }}>🟢 ລາຍຮັບຄາດກາ (Projected Income)</th>
+                    <th style={{ color: '#f87171' }}>🔴 ລາຍຈ່າຍຄາດກາ (Projected Expense)</th>
+                    <th style={{ color: '#38bdf8', fontWeight: 800 }}>💰 ກຳໄລສຸດທິຄາດກາ (Net Profit)</th>
+                    <th>ຄວາມແມັດຢຳ (% Confidence)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {financialForecastData.map((f, idx) => (
+                    <tr key={idx}>
+                      <td style={{ fontWeight: 800, color: '#34d399' }}>{f.month}</td>
+                      <td style={{ fontWeight: 700, color: '#34d399' }}>₭ {f.projectedIncome.toLocaleString()}</td>
+                      <td style={{ fontWeight: 700, color: '#f87171' }}>₭ {f.projectedExpense.toLocaleString()}</td>
+                      <td style={{ fontWeight: 800, color: '#38bdf8', fontSize: '0.95rem' }}>₭ {f.projectedProfit.toLocaleString()}</td>
+                      <td>
+                        <span className="status-badge-pill green" style={{ fontSize: '0.78rem' }}>
+                          🎯 {f.confidence} Confidence
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🌟 SUB-TAB 4: BUDGET ALERTS & BANK STATEMENT RECONCILIATION */}
+      {activeSubTab === 'BUDGET_STATEMENT' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Smart Budget Alert Section */}
+          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
+              <AlertTriangle size={28} color="#f59e0b" />
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>💡 ລະບົບເຕືອນງົບປະມານລາຍຈ່າຍ (Smart Budgeting Alerts)</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  ຕິດຕາມການໃຊ້ຈ່າຍແຕ່ລະໝວດໝູ່ ບໍ່ໃຫ້ເກີນງົບປະມານທີ່ຕັ້ງໄວ້
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+              {expenseCategories.map((c, idx) => {
+                const percentSpent = Math.round((c.totalSpentLAK / c.budgetLAK) * 100);
+                return (
+                  <div key={idx} className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: `4px solid ${c.color}`, borderRadius: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '1.2rem' }}>{c.icon}</span>
+                      <span className="tag tag-emerald" style={{ fontSize: '0.72rem' }}>{c.status}</span>
+                    </div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: '8px 0 2px' }}>{c.name}</h4>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      ໃຊ້ໄປ: ₭ {c.totalSpentLAK.toLocaleString()} / ງົບ ₭ {c.budgetLAK.toLocaleString()}
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)', height: '8px', borderRadius: '4px', marginTop: '10px', overflow: 'hidden' }}>
+                      <div style={{ width: `${percentSpent}%`, background: c.color, height: '100%' }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Bank Statement Reconciliation Section */}
+          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
+              <ShieldCheck size={28} color="#34d399" />
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🧾 ກະທົບຍອດ Bank Statement Reconciliation</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  ກວດສອບຄວາມຖືກຕ້ອງ 100% ລະຫວ່າງ ຍອດໃນລະບົບ vs ຍອດໃນ Bank Statement
+                </p>
+              </div>
+            </div>
+
+            <div className="table-responsive-wrapper">
+              <table className="customer-full-table">
+                <thead>
+                  <tr>
+                    <th>ບັນຊີ/ກະເປົາເງິນ</th>
+                    <th>ເລກບັນຊີ</th>
+                    <th>ຍອດເງິນໃນລະບົບ (System Balance)</th>
+                    <th>ຍອດ Bank Statement</th>
+                    <th>ສະຖານະ Reconciliation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {initialWallets.map((w) => (
+                    <tr key={w.id}>
+                      <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{w.icon} {w.name}</td>
+                      <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{w.accountNo}</td>
+                      <td style={{ fontWeight: 800, color: w.color }}>₭ {w.balanceLAK.toLocaleString()}</td>
+                      <td style={{ fontWeight: 800, color: '#34d399' }}>₭ {w.balanceLAK.toLocaleString()}</td>
+                      <td>
+                        <span className="status-badge-pill green" style={{ fontSize: '0.78rem' }}>
+                          {w.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-TAB 5: WALLETS */}
       {activeSubTab === 'WALLETS' && (
         <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
@@ -485,7 +746,7 @@ export default function IncomeExpenseView({
         </div>
       )}
 
-      {/* SUB-TAB 4: LIVE TRANSACTIONS LOG */}
+      {/* SUB-TAB 6: LIVE TRANSACTIONS LOG */}
       {activeSubTab === 'TRANSACTIONS' && (
         <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
