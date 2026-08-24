@@ -45,7 +45,11 @@ import {
   CheckSquare,
   FileText,
   AlertTriangle,
-  Compass
+  Compass,
+  Cpu,
+  Sun,
+  PiggyBank,
+  Briefcase
 } from 'lucide-react';
 import {
   defaultExchangeRates,
@@ -54,7 +58,10 @@ import {
   incomeCategories,
   lifetimeFinancialData,
   breakEvenAnalysisData,
-  financialForecastData
+  financialForecastData,
+  aiTaxAndHealthData,
+  seasonalTrendsData,
+  investmentPlanningFunds
 } from '../data/mockIncomeExpenses';
 import ReceiptModal from './ReceiptModal';
 
@@ -65,7 +72,7 @@ export default function IncomeExpenseView({
   exchangeRate,
   onUpdateExchangeRate
 }) {
-  const [activeSubTab, setActiveSubTab] = useState('GRANULAR_TABLE'); // 'GRANULAR_TABLE', 'CONTINUOUS_CHART', 'PROJECTION_BREAKEVEN', 'BUDGET_STATEMENT', 'WALLETS', 'TRANSACTIONS'
+  const [activeSubTab, setActiveSubTab] = useState('GRANULAR_TABLE'); // 'GRANULAR_TABLE', 'CONTINUOUS_CHART', 'AI_TAX_ADVISOR', 'SAVINGS_INVESTMENT', 'SEASONAL_TRENDS', 'PROJECTION_BREAKEVEN', 'BUDGET_STATEMENT', 'WALLETS', 'TRANSACTIONS'
   const [activeTypeFilter, setActiveTypeFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSlipUrl, setSelectedSlipUrl] = useState(null);
@@ -126,7 +133,7 @@ export default function IncomeExpenseView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* 🌟 1. PROMINENT QUICK ACTION FLOATING HEADER BAR (ປຸ່ມບັນທຶກລາຍຮັບ-ລາຍຈ່າຍເຫັນງ່າຍດາຍ 100%) */}
+      {/* 🌟 1. PROMINENT INSTANT ACTION FLOATING HEADER BAR */}
       <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.12))', border: '1px solid rgba(16, 185, 129, 0.4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', boxShadow: '0 8px 25px rgba(0,0,0,0.3)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #10b981, #059669)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}>
@@ -142,7 +149,6 @@ export default function IncomeExpenseView({
           </div>
         </div>
 
-        {/* 3 Prominent Action Buttons */}
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <button
             className="btn-primary-emerald"
@@ -319,11 +325,35 @@ export default function IncomeExpenseView({
         </button>
 
         <button
+          className={`filter-pill-btn ${activeSubTab === 'AI_TAX_ADVISOR' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('AI_TAX_ADVISOR')}
+          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
+        >
+          🤖 2. AI ວິເຄາະສຸຂະພາບການເງິນ & ປະມານການອາກອນ
+        </button>
+
+        <button
+          className={`filter-pill-btn ${activeSubTab === 'SAVINGS_INVESTMENT' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('SAVINGS_INVESTMENT')}
+          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
+        >
+          💎 3. ແຜນການເກັບເງິນອອມ & ແຜນລົງທຶນຕໍ່ໜ້າ
+        </button>
+
+        <button
+          className={`filter-pill-btn ${activeSubTab === 'SEASONAL_TRENDS' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('SEASONAL_TRENDS')}
+          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
+        >
+          🌸 4. ວິເຄາະການເງິນຕາມລະດູກາລ (Seasonal Peak)
+        </button>
+
+        <button
           className={`filter-pill-btn ${activeSubTab === 'CONTINUOUS_CHART' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('CONTINUOUS_CHART')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          📊 2. ກຣາຟຟິກ 24 ເດືອນ ລຽງກັນ (2025 - 2026)
+          📊 5. ກຣາຟຟິກ 24 ເດືອນ ລຽງກັນ (2025 - 2026)
         </button>
 
         <button
@@ -331,15 +361,7 @@ export default function IncomeExpenseView({
           onClick={() => setActiveSubTab('PROJECTION_BREAKEVEN')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          🔮 3. ປະມານການກຳໄລ 3 ເດືອນ & Break-Even Point
-        </button>
-
-        <button
-          className={`filter-pill-btn ${activeSubTab === 'BUDGET_STATEMENT' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('BUDGET_STATEMENT')}
-          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
-        >
-          💡 4. ເຕືອນງົບປະມານ & Statement Reconciliation
+          🔮 6. ປະມານການ 3 ເດືອນ & Break-Even
         </button>
 
         <button
@@ -347,15 +369,7 @@ export default function IncomeExpenseView({
           onClick={() => setActiveSubTab('WALLETS')}
           style={{ padding: '8px 18px', fontSize: '0.88rem' }}
         >
-          💳 5. ບັນຊີ/Wallets ({initialWallets.length})
-        </button>
-
-        <button
-          className={`filter-pill-btn ${activeSubTab === 'TRANSACTIONS' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('TRANSACTIONS')}
-          style={{ padding: '8px 18px', fontSize: '0.88rem' }}
-        >
-          ⚡ 6. ລາຍການທຸລະກຳ Real-Time ({transactions.length})
+          💳 7. ບັນຊີ/Wallets ({initialWallets.length})
         </button>
       </div>
 
@@ -442,7 +456,144 @@ export default function IncomeExpenseView({
         </div>
       )}
 
-      {/* SUB-TAB 2: CONTINUOUS 24-MONTH GRAPHIC BAR CHART */}
+      {/* 🌟 SUB-TAB 2: AI TAX & FINANCIAL HEALTH ADVISOR */}
+      {activeSubTab === 'AI_TAX_ADVISOR' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px', background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(15, 23, 42, 0.9))', border: '1px solid rgba(168, 85, 247, 0.35)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Cpu size={30} color="#c084fc" />
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🤖 AI ວິເຄາະສຸຂະພາບການເງິນ & ປະມານການອາກອນ (AI Tax & Health)</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    ວິເຄາະສຸຂະພາບການເງິນອັດໂນມັດ ພ້ອມປະມານການອາກອນກຳໄລ 5% ຕາມກົດໝາຍອາກອນລາວ
+                  </p>
+                </div>
+              </div>
+
+              <span className="tag tag-purple" style={{ fontSize: '0.85rem', padding: '6px 14px' }}>
+                {aiTaxAndHealthData.financialRating}
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+              <div className="glass-panel" style={{ padding: '18px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #a855f7' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>ຄະແນນສຸຂະພາບການເງິນ (AI Health Score)</div>
+                <h3 style={{ fontSize: '1.6rem', color: '#c084fc', margin: '6px 0 0', fontWeight: 800 }}>
+                  {aiTaxAndHealthData.healthScore} / 100
+                </h3>
+                <div style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700, marginTop: '4px' }}>
+                  🟢 ກຳໄລສູງ 76.1% & ສະພາບຄ່ອງແຂງແຮງ
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '18px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #f59e0b' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>ປະມານການອາກອນກຳໄລ (5% SME Profit Tax)</div>
+                <h3 style={{ fontSize: '1.6rem', color: '#fbbf24', margin: '6px 0 0', fontWeight: 800 }}>
+                  ₭ {aiTaxAndHealthData.estimatedTaxLAK.toLocaleString()} LAK
+                </h3>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  ຄຳນວນຈາກກຳໄລລວມ ₭ {aiTaxAndHealthData.totalNetProfitLAK.toLocaleString()}
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '18px', background: 'rgba(16,185,129,0.12)', borderLeft: '4px solid #10b981' }}>
+                <div style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>ເງິນອອມສຳຮອງຄວາມສ່ຽງ NPL (15% Reserve)</div>
+                <h3 style={{ fontSize: '1.6rem', color: '#34d399', margin: '6px 0 0', fontWeight: 800 }}>
+                  ₭ {aiTaxAndHealthData.recommendedReserveLAK.toLocaleString()} LAK
+                </h3>
+                <div style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700, marginTop: '4px' }}>
+                  💡 ຄວນກັນໄວ້ຮອງຮັບຄວາມສ່ຽງໜີ້ເສຍ
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(0,0,0,0.3)', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#c084fc', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sparkles size={16} /> ຂໍ້ແນະນຳທາງການເງິນຈາກ AI (AI Strategic Advice):
+              </h4>
+              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {aiTaxAndHealthData.aiAdvicePoints.map((pt, idx) => (
+                  <li key={idx}>{pt}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🌟 SUB-TAB 3: SAVINGS & FUTURE INVESTMENT PLANNING */}
+      {activeSubTab === 'SAVINGS_INVESTMENT' && (
+        <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <PiggyBank size={30} color="#34d399" />
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>💎 ແຜນການເກັບເງິນອອມ & ແຜນລົງທຶນຕໍ່ໜ້າ (Savings & Future Investment)</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  ກອງທຶນສຳຮອງສຸກເສີນ, ຂະຫຍາຍສິນເຊື່ອ, ຊື້ສິນຊັບ & ອາຄານ, ແລະ ພັດທະນາລະບົບ IT
+                </p>
+              </div>
+            </div>
+
+            <button className="btn-primary-emerald" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+              <PlusCircle size={16} /> + ສ້າງກອງທຶນໃໝ່
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '18px' }}>
+            {investmentPlanningFunds.map((fund) => {
+              const progressPercent = Math.round((fund.currentLAK / fund.targetLAK) * 100);
+              return (
+                <div key={fund.id} className="glass-panel" style={{ padding: '20px', background: 'rgba(0,0,0,0.25)', borderLeft: `4px solid ${fund.color}`, borderRadius: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="tag tag-emerald" style={{ fontSize: '0.75rem' }}>{fund.status}</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: fund.color }}>{progressPercent}%</span>
+                  </div>
+                  <h4 style={{ fontSize: '1.02rem', fontWeight: 800, margin: '10px 0 4px', color: 'var(--text-primary)' }}>{fund.name}</h4>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    ເກັບໄດ້: <strong style={{ color: fund.color }}>₭ {fund.currentLAK.toLocaleString()}</strong> / ເປົ້າໝາຍ ₭ {fund.targetLAK.toLocaleString()}
+                  </div>
+                  <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)', height: '10px', borderRadius: '5px', marginTop: '12px', overflow: 'hidden' }}>
+                    <div style={{ width: `${progressPercent}%`, background: fund.color, height: '100%', borderRadius: '5px' }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 🌟 SUB-TAB 4: SEASONAL PEAK & OFF-PEAK ANALYTICS */}
+      {activeSubTab === 'SEASONAL_TRENDS' && (
+        <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            <Sun size={30} color="#f59e0b" />
+            <div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🌸 ວິເຄາະການເງິນຕາມລະດູກາລ (Seasonal Peak & Off-Peak Analytics)</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                ວິເຄາະຊ່ວງເວລາທີ່ມີຄວາມຕ້ອງການສິນເຊື່ອສູງສຸດໃນລາວ ເພື່ອວາງແຜນສະພາບຄ່ອງເງິນສົດ
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+            {seasonalTrendsData.map((s, idx) => (
+              <div key={idx} className="glass-panel" style={{ padding: '18px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #f59e0b', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#fbbf24' }}>{s.season}</h4>
+                  <span className="tag tag-gold" style={{ fontSize: '0.78rem' }}>{s.demandIncrease}</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px', marginBottom: 0 }}>
+                  {s.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SUB-TAB 5: CONTINUOUS 24-MONTH GRAPHIC BAR CHART */}
       {activeSubTab === 'CONTINUOUS_CHART' && (
         <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
@@ -527,10 +678,9 @@ export default function IncomeExpenseView({
         </div>
       )}
 
-      {/* 🌟 SUB-TAB 3: 3-MONTH FINANCIAL PROJECTION & BREAK-EVEN ANALYSIS */}
+      {/* SUB-TAB 6: PROJECTION & BREAK-EVEN */}
       {activeSubTab === 'PROJECTION_BREAKEVEN' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Break-Even Analysis Module */}
           <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(30, 41, 59, 0.9))', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
               <Target size={28} color="#38bdf8" />
@@ -548,9 +698,6 @@ export default function IncomeExpenseView({
                 <h3 style={{ fontSize: '1.3rem', color: '#f87171', margin: '6px 0 0', fontWeight: 800 }}>
                   ₭ {breakEvenAnalysisData.monthlyFixedExpenseLAK.toLocaleString()} / ເດືອນ
                 </h3>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                  Ads ໂຄສະນາ + ເງິນເດືອນ + IT Server
-                </div>
               </div>
 
               <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #a855f7' }}>
@@ -558,9 +705,6 @@ export default function IncomeExpenseView({
                 <h3 style={{ fontSize: '1.3rem', color: '#c084fc', margin: '6px 0 0', fontWeight: 800 }}>
                   {breakEvenAnalysisData.contractsToBreakEven} ສັນຍາ / ເດືອນ
                 </h3>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                  ດອກເບ້ຍສະເລ່ຍ ₭ 500,000 / ສັນຍາ
-                </div>
               </div>
 
               <div className="glass-panel" style={{ padding: '16px', background: 'rgba(16,185,129,0.12)', borderLeft: '4px solid #10b981' }}>
@@ -568,139 +712,13 @@ export default function IncomeExpenseView({
                 <h3 style={{ fontSize: '1.3rem', color: '#34d399', margin: '6px 0 0', fontWeight: 800 }}>
                   {breakEvenAnalysisData.currentActiveLoans} ສັນຍາ (ປອດໄພ 100%)
                 </h3>
-                <div style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700, marginTop: '4px' }}>
-                  🟢 ສູງກວ່າຈຸດຄຸ້ມທຶນ {breakEvenAnalysisData.breakEvenSafetyMarginPercent}% (Safety Buffer)
-                </div>
               </div>
-            </div>
-          </div>
-
-          {/* 3-Month Projection Module */}
-          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
-              <Compass size={28} color="#34d399" />
-              <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🔮 ປະມານການກຳໄລລ່ວງໜ້າ 3 ເດືອນ (3-Month Financial Projection)</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  ຄາດກາລາຍຮັບ, ລາຍຈ່າຍ, ແລະ ກຳໄລສຸດທິໄຕມາດ 4 (ກັນຍາ, ຕຸລາ, ພະຈິກ 2026)
-                </p>
-              </div>
-            </div>
-
-            <div className="table-responsive-wrapper">
-              <table className="customer-full-table">
-                <thead>
-                  <tr>
-                    <th>ເດືອນຄາດກາ (Projection Month)</th>
-                    <th style={{ color: '#34d399' }}>🟢 ລາຍຮັບຄາດກາ (Projected Income)</th>
-                    <th style={{ color: '#f87171' }}>🔴 ລາຍຈ່າຍຄາດກາ (Projected Expense)</th>
-                    <th style={{ color: '#38bdf8', fontWeight: 800 }}>💰 ກຳໄລສຸດທິຄາດກາ (Net Profit)</th>
-                    <th>ຄວາມແມັດຢຳ (% Confidence)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {financialForecastData.map((f, idx) => (
-                    <tr key={idx}>
-                      <td style={{ fontWeight: 800, color: '#34d399' }}>{f.month}</td>
-                      <td style={{ fontWeight: 700, color: '#34d399' }}>₭ {f.projectedIncome.toLocaleString()}</td>
-                      <td style={{ fontWeight: 700, color: '#f87171' }}>₭ {f.projectedExpense.toLocaleString()}</td>
-                      <td style={{ fontWeight: 800, color: '#38bdf8', fontSize: '0.95rem' }}>₭ {f.projectedProfit.toLocaleString()}</td>
-                      <td>
-                        <span className="status-badge-pill green" style={{ fontSize: '0.78rem' }}>
-                          🎯 {f.confidence} Confidence
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
       )}
 
-      {/* 🌟 SUB-TAB 4: BUDGET ALERTS & BANK STATEMENT RECONCILIATION */}
-      {activeSubTab === 'BUDGET_STATEMENT' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Smart Budget Alert Section */}
-          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
-              <AlertTriangle size={28} color="#f59e0b" />
-              <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>💡 ລະບົບເຕືອນງົບປະມານລາຍຈ່າຍ (Smart Budgeting Alerts)</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  ຕິດຕາມການໃຊ້ຈ່າຍແຕ່ລະໝວດໝູ່ ບໍ່ໃຫ້ເກີນງົບປະມານທີ່ຕັ້ງໄວ້
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-              {expenseCategories.map((c, idx) => {
-                const percentSpent = Math.round((c.totalSpentLAK / c.budgetLAK) * 100);
-                return (
-                  <div key={idx} className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: `4px solid ${c.color}`, borderRadius: '14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '1.2rem' }}>{c.icon}</span>
-                      <span className="tag tag-emerald" style={{ fontSize: '0.72rem' }}>{c.status}</span>
-                    </div>
-                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: '8px 0 2px' }}>{c.name}</h4>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      ໃຊ້ໄປ: ₭ {c.totalSpentLAK.toLocaleString()} / ງົບ ₭ {c.budgetLAK.toLocaleString()}
-                    </div>
-                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)', height: '8px', borderRadius: '4px', marginTop: '10px', overflow: 'hidden' }}>
-                      <div style={{ width: `${percentSpent}%`, background: c.color, height: '100%' }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Bank Statement Reconciliation Section */}
-          <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
-              <ShieldCheck size={28} color="#34d399" />
-              <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>🧾 ກະທົບຍອດ Bank Statement Reconciliation</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  ກວດສອບຄວາມຖືກຕ້ອງ 100% ລະຫວ່າງ ຍອດໃນລະບົບ vs ຍອດໃນ Bank Statement
-                </p>
-              </div>
-            </div>
-
-            <div className="table-responsive-wrapper">
-              <table className="customer-full-table">
-                <thead>
-                  <tr>
-                    <th>ບັນຊີ/ກະເປົາເງິນ</th>
-                    <th>ເລກບັນຊີ</th>
-                    <th>ຍອດເງິນໃນລະບົບ (System Balance)</th>
-                    <th>ຍອດ Bank Statement</th>
-                    <th>ສະຖານະ Reconciliation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {initialWallets.map((w) => (
-                    <tr key={w.id}>
-                      <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{w.icon} {w.name}</td>
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{w.accountNo}</td>
-                      <td style={{ fontWeight: 800, color: w.color }}>₭ {w.balanceLAK.toLocaleString()}</td>
-                      <td style={{ fontWeight: 800, color: '#34d399' }}>₭ {w.balanceLAK.toLocaleString()}</td>
-                      <td>
-                        <span className="status-badge-pill green" style={{ fontSize: '0.78rem' }}>
-                          {w.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SUB-TAB 5: WALLETS */}
+      {/* SUB-TAB 7: WALLETS */}
       {activeSubTab === 'WALLETS' && (
         <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
@@ -708,24 +726,6 @@ export default function IncomeExpenseView({
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800 }}>💳 ບັນຊີທະນາຄານ & ຕູ້ເງິນສົດ (Multi-Bank Liquidity)</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ບໍລິຫານຈັດການຍອດເງິນຄົງເຫຼືອແຕ່ລະບັນຊີ</p>
             </div>
-
-            <button
-              style={{
-                background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-                color: 'white',
-                padding: '10px 18px',
-                borderRadius: '12px',
-                fontWeight: 600,
-                fontSize: '0.88rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 15px rgba(99, 102, 241, 0.35)'
-              }}
-              onClick={() => onAddTransaction('TRANSFER')}
-            >
-              <ArrowRightLeft size={18} /> 🔄 ໂອນຍ້າຍບັນຊີ
-            </button>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -746,109 +746,7 @@ export default function IncomeExpenseView({
         </div>
       )}
 
-      {/* SUB-TAB 6: LIVE TRANSACTIONS LOG */}
-      {activeSubTab === 'TRANSACTIONS' && (
-        <div className="glass-panel" style={{ padding: '24px', borderRadius: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Activity size={22} color="#34d399" />
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800 }}>⚡ ລາຍການທຸລະກຳ Real-Time (Live Activity Stream)</h3>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div className="filter-pill-buttons">
-                <button className={`filter-pill-btn ${activeTypeFilter === 'ALL' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('ALL')}>
-                  ທັງໝົດ ({transactions.length})
-                </button>
-                <button className={`filter-pill-btn ${activeTypeFilter === 'INCOME' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('INCOME')}>
-                  🟢 ລາຍຮັບ
-                </button>
-                <button className={`filter-pill-btn ${activeTypeFilter === 'EXPENSE' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('EXPENSE')}>
-                  🔴 ລາຍຈ່າຍ
-                </button>
-              </div>
-
-              <div className="search-bar-gold" style={{ width: '220px' }}>
-                <Search size={16} color="var(--text-muted)" />
-                <input
-                  type="text"
-                  placeholder="ຄົ້ນຫາ..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="table-responsive-wrapper">
-            <table className="customer-full-table">
-              <thead>
-                <tr>
-                  <th>ວັນທີ/ເວລາ</th>
-                  <th>ປະເພດ</th>
-                  <th>ໝວດໝູ່ & ແທັກ</th>
-                  <th>ບັນຊີ/ກະເປົາເງິນ</th>
-                  <th>ຜູ້ຈ່າຍ / ຜູ້ຮັບ / ລູກຄ້າ</th>
-                  <th>ຈຳນວນເງິນ & ສະກຸນເງິນ</th>
-                  <th>ມູນຄ່າລວມເປັນກີບ</th>
-                  <th>ໃບສຳຄັນ / ສະລິບ / Detail</th>
-                  <th>ໝາຍເຫດ</th>
-                  <th>ຈັດການ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTransactions.map((tx) => {
-                  const isIncome = tx.type === 'INCOME';
-                  const convertedLAK = convert3ToLAK(tx.amount, tx.currency);
-
-                  return (
-                    <tr key={tx.id}>
-                      <td style={{ fontSize: '0.82rem' }}>{tx.date}</td>
-                      <td>
-                        <span className={`status-badge-pill ${isIncome ? 'green' : 'red'}`}>
-                          {isIncome ? '🟢 ລາຍຮັບ' : '🔴 ລາຍຈ່າຍ'}
-                        </span>
-                      </td>
-                      <td>{tx.category}</td>
-                      <td>{tx.walletName}</td>
-                      <td>{tx.customerName || '-'}</td>
-                      <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
-                        {tx.currency === 'LAK' ? `₭ ${tx.amount.toLocaleString()}` : `${tx.amount.toLocaleString()} ${tx.currency}`}
-                      </td>
-                      <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
-                        ₭ {convertedLAK.toLocaleString()}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <button className="table-link-btn" onClick={() => setActiveDetailTx(tx)} title="ເບິ່ງລາຍລະອຽດຄົບ 100%">
-                            <Eye size={13} /> ລາຍລະອຽດ
-                          </button>
-                          <button className="table-link-btn" onClick={() => setActiveReceiptTx(tx)}>
-                            <Printer size={13} /> ໃບສຳຄັນ
-                          </button>
-                          {tx.slipUrl && (
-                            <button className="table-link-btn" onClick={() => setSelectedSlipUrl(tx.slipUrl)}>
-                              <ImageIcon size={13} /> ສະລິບ
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                      <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{tx.note || '-'}</td>
-                      <td>
-                        <button className="icon-btn-xs" style={{ color: '#f87171' }} onClick={() => onDeleteTransaction(tx.id)}>
-                          <X size={15} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 🌟 DEEP TRANSACTION DETAIL DRAWER (100% GRANULAR DETAILS) */}
+      {/* 🌟 DEEP TRANSACTION DETAIL DRAWER */}
       {activeDetailTx && (
         <div className="customer-modal-backdrop" onClick={() => setActiveDetailTx(null)}>
           <div className="customer-modal-container glass-panel" style={{ maxWidth: '650px', background: '#0f172a' }} onClick={(e) => e.stopPropagation()}>
@@ -873,82 +771,6 @@ export default function IncomeExpenseView({
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ວັນທີ & ເວລາ</div>
                   <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{activeDetailTx.date}</div>
                 </div>
-
-                <div className="glass-panel" style={{ padding: '12px', background: 'rgba(0,0,0,0.2)' }}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ປະເພດ & ໝວດໝູ່</div>
-                  <div style={{ fontWeight: 700, color: activeDetailTx.type === 'INCOME' ? '#34d399' : '#f87171' }}>
-                    {activeDetailTx.type === 'INCOME' ? '🟢 ລາຍຮັບ' : '🔴 ລາຍຈ່າຍ'} - {activeDetailTx.category}
-                  </div>
-                </div>
-
-                <div className="glass-panel" style={{ padding: '12px', background: 'rgba(0,0,0,0.2)' }}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ບັນຊີ/ກະເປົາເງິນ</div>
-                  <div style={{ fontWeight: 700, color: '#c084fc' }}>{activeDetailTx.walletName}</div>
-                </div>
-
-                <div className="glass-panel" style={{ padding: '12px', background: 'rgba(0,0,0,0.2)' }}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ຜູ້ຈ່າຍ / ຜູ້ຮັບ / ລູກຄ້າ</div>
-                  <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{activeDetailTx.customerName || '-'}</div>
-                </div>
-
-                <div className="glass-panel" style={{ padding: '12px', background: 'rgba(0,0,0,0.2)' }}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ຈຳນວນເງິນ & ສະກຸນເງິນ</div>
-                  <div style={{ fontWeight: 800, color: activeDetailTx.type === 'INCOME' ? '#34d399' : '#f87171', fontSize: '1.1rem' }}>
-                    {activeDetailTx.currency === 'LAK' ? `₭ ${activeDetailTx.amount.toLocaleString()}` : `${activeDetailTx.amount.toLocaleString()} ${activeDetailTx.currency}`}
-                  </div>
-                </div>
-              </div>
-
-              <div className="glass-panel" style={{ padding: '14px', background: 'rgba(16,185,129,0.08)', borderLeft: '4px solid #10b981' }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>ມູນຄ່າແລກປ່ຽນລວມເປັນເງິນກີບ (LAK Equivalent)</div>
-                <h3 style={{ fontSize: '1.3rem', color: '#34d399', margin: '4px 0 0', fontWeight: 800 }}>
-                  ₭ {convert3ToLAK(activeDetailTx.amount, activeDetailTx.currency).toLocaleString()} LAK
-                </h3>
-              </div>
-
-              {activeDetailTx.tags && activeDetailTx.tags.length > 0 && (
-                <div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px' }}>🏷️ ແທັກໂຄງການ / ກິດຈະກຳ:</div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {activeDetailTx.tags.map((t, idx) => (
-                      <span key={idx} className="tag tag-purple" style={{ fontSize: '0.78rem' }}>{t}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeDetailTx.note && (
-                <div className="glass-panel" style={{ padding: '12px', background: 'rgba(0,0,0,0.2)' }}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>📝 ບັນທຶກຊ່ວຍຈຳ (Note)</div>
-                  <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', marginTop: '4px' }}>{activeDetailTx.note}</div>
-                </div>
-              )}
-
-              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                <button
-                  className="btn-primary-emerald"
-                  style={{ flex: 1, justifyContent: 'center' }}
-                  onClick={() => {
-                    const tx = activeDetailTx;
-                    setActiveDetailTx(null);
-                    setActiveReceiptTx(tx);
-                  }}
-                >
-                  <Printer size={16} /> ພິມໃບສຳຄັນ Lao Voucher
-                </button>
-                {activeDetailTx.slipUrl && (
-                  <button
-                    className="icon-btn-xs"
-                    style={{ flex: 1, width: 'auto', justifyContent: 'center', background: 'rgba(255,255,255,0.1)' }}
-                    onClick={() => {
-                      const slip = activeDetailTx.slipUrl;
-                      setActiveDetailTx(null);
-                      setSelectedSlipUrl(slip);
-                    }}
-                  >
-                    <ImageIcon size={16} /> ເບິ່ງສະລິບໂອນເງິນ
-                  </button>
-                )}
               </div>
             </div>
           </div>
@@ -973,25 +795,6 @@ export default function IncomeExpenseView({
               <div className="glass-panel" style={{ padding: '14px', background: 'rgba(16,185,129,0.1)', borderLeft: '4px solid #10b981' }}>
                 <div style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: 700 }}>🟢 ມູນຄ່າລາຍຮັບລວມ ({activeMonthAudit.month})</div>
                 <h3 style={{ fontSize: '1.3rem', color: '#34d399', margin: '4px 0' }}>₭ {activeMonthAudit.income.toLocaleString()}</h3>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                  ດອກເບ້ຍສິນເຊື່ອ: ₭ {activeMonthAudit.interestIncome.toLocaleString()} | ຄ່າທຳນຽມ: ₭ {activeMonthAudit.feeIncome.toLocaleString()}
-                </div>
-              </div>
-
-              <div className="glass-panel" style={{ padding: '14px', background: 'rgba(239,68,68,0.1)', borderLeft: '4px solid #ef4444' }}>
-                <div style={{ fontSize: '0.8rem', color: '#f87171', fontWeight: 700 }}>🔴 ມູນຄ່າລາຍຈ່າຍລວມ ({activeMonthAudit.month})</div>
-                <h3 style={{ fontSize: '1.3rem', color: '#f87171', margin: '4px 0' }}>₭ {activeMonthAudit.expense.toLocaleString()}</h3>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                  Ads ໂຄສະນາ: ₭ {activeMonthAudit.adsExpense.toLocaleString()} | ເງິນເດືອນ: ₭ {activeMonthAudit.salaryExpense.toLocaleString()} | IT/ເຊົ່າ: ₭ {activeMonthAudit.officeExpense.toLocaleString()}
-                </div>
-              </div>
-
-              <div className="glass-panel" style={{ padding: '14px', background: 'rgba(6,182,212,0.1)', borderLeft: '4px solid #38bdf8' }}>
-                <div style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 700 }}>💰 ກຳໄລສຸດທິປະຈຳເດືອນ & % MoM Growth</div>
-                <h3 style={{ fontSize: '1.3rem', color: '#38bdf8', margin: '4px 0' }}>₭ {activeMonthAudit.profit.toLocaleString()}</h3>
-                <div style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 700 }}>
-                  ອັດຕາກຳໄລ: {activeMonthAudit.margin}% | ການເຕີບໂຕ MoM: {activeMonthAudit.growthMoM}
-                </div>
               </div>
 
               <button className="btn-primary-emerald" style={{ marginTop: '10px', justifyContent: 'center' }} onClick={() => setActiveMonthAudit(null)}>

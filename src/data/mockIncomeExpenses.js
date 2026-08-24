@@ -1,4 +1,4 @@
-// Complete Multi-Year Financial Dataset with Forecasting, Budget Alerts, Break-Even & Statement Reconciliation
+// Complete Multi-Year Financial Dataset with Strategic Planning, AI Tax Advisor, Seasonal Trends & Investment Funds
 
 export const defaultExchangeRates = {
   lak: 1,
@@ -20,16 +20,46 @@ export function convertToLAK(amount, currency, rates = defaultExchangeRates) {
   return Math.round(amount);
 }
 
-// Break-Even & Forecasting Analytics Data
-export const breakEvenAnalysisData = {
-  monthlyFixedExpenseLAK: 6800000, // Ads + Staff Salaries + IT Cloud/Office
-  avgInterestPerLoanLAK: 500000,   // Average interest earned per loan contract
-  contractsToBreakEven: 14,        // 14 contracts needed to cover 6.8M LAK expenses
-  currentActiveLoans: 56,
-  breakEvenSafetyMarginPercent: 300, // 300% safety buffer over break-even point
+// AI Tax & Financial Health Advisor Data
+export const aiTaxAndHealthData = {
+  healthScore: 98, // out of 100
+  financialRating: '🟢 ແຂງແຮງດີເລີດ (AAA Financial Health)',
+  totalNetProfitLAK: 358200000,
+  estimatedLaoTaxPercent: 5, // 5% Lao SME Profit Tax Rate
+  estimatedTaxLAK: 17910000,  // 358.2M * 5%
+  recommendedReserveRatePercent: 15,
+  recommendedReserveLAK: 53730000,
+  aiAdvicePoints: [
+    '💡 ກຳໄລສຸດທິ 76.1% ສູງກວ່າສະເລ່ຍອົງກອນສິນເຊື່ອທົ່ວໄປ (ສະເລ່ຍ 45-50%).',
+    '📊 ຄວນຈັດສັນເງິນອອມສຳຮອງສຸກເສີນ 15% (₭ 53.7M) ເພື່ອຮອງຮັບຄວາມສ່ຽງ NPL ໃນອະນາຄົດ.',
+    '🧾 ປະມານການອາກອນກຳໄລ 5% ປະມານ ₭ 17,910,000 LAK ຄວນກຽມສຳຮອງຈ່າຍໃນທ້າຍປີ.'
+  ]
 };
 
-// 3-Month Financial Projection (Q4 2026 Forecast)
+// Seasonal Peak & Off-Peak Trends
+export const seasonalTrendsData = [
+  { season: '🌸 ປີໃໝ່ລາວ (ເມສາ - April Peak)', trendType: 'HIGH_DEMAND', demandIncrease: '+25%', description: 'ລູກຄ້າຕ້ອງການເງິນດ່ວນເພື່ອທ່ອງທ່ຽວ & ບຸນປີໃໝ່' },
+  { season: '🌧️ ฤດູຝົນ/ກorigິກຳ (ມິຖຸນາ - ສິງຫາ)', trendType: 'STABLE_GROWTH', demandIncrease: '+12%', description: 'ລູກຄ້າກູ້ຢືມເພື່ອການກະເສດ & ທຸລະກິດປະຈຳ' },
+  { season: '🌾 ບຸນອອກພັນສາ & ທາດຫຼວງ (ຕຸລາ - ພະຈິກ)', trendType: 'HIGH_TURNOVER', demandIncrease: '+18%', description: 'ການໝູນວຽນເງິນສົດສູງໃນທຸລະກິດການຄ້າ' },
+  { season: '🎄 ທ້າຍປີ / ປີໃໝ່ສາກົນ (ທັນວາ Year-End)', trendType: 'MAX_REVENUE', demandIncrease: '+30%', description: 'ຍອດຊຳລະຄືນດອກເບ້ຍ & ເຄຍສັນຍາສູງສຸດ' }
+];
+
+// Strategic Savings & Investment Funds
+export const investmentPlanningFunds = [
+  { id: 'FUND-EMERGENCY', name: '🛡️ ກອງທຶນສຳຮອງສຸກເສີນ (Emergency Reserve Fund)', targetLAK: 50000000, currentLAK: 35000000, color: '#f59e0b', status: '🟢 70.0% ສຳເລັດ' },
+  { id: 'FUND-LOAN-EXP', name: '📈 ກອງທຶນຂະຫຍາຍສິນເຊື່ອໃໝ່ (Loan Expansion Fund)', targetLAK: 150000000, currentLAK: 110000000, color: '#34d399', status: '🟢 73.3% ສຳເລັດ' },
+  { id: 'FUND-PROPERTY', name: '🏢 ກອງທຶນລົງທຶນຊື້ສິນຊັບ & ອາຄານ (Asset & Property Fund)', targetLAK: 300000000, currentLAK: 180000000, color: '#38bdf8', status: '🟢 60.0% ສຳເລັດ' },
+  { id: 'FUND-TECH', name: '🚀 ກອງທຶນພັດທະນາລະບົບ IT & AI (Tech Innovation Fund)', targetLAK: 40000000, currentLAK: 32000000, color: '#a855f7', status: '🟢 80.0% ສຳເລັດ' }
+];
+
+export const breakEvenAnalysisData = {
+  monthlyFixedExpenseLAK: 6800000,
+  avgInterestPerLoanLAK: 500000,
+  contractsToBreakEven: 14,
+  currentActiveLoans: 56,
+  breakEvenSafetyMarginPercent: 300,
+};
+
 export const financialForecastData = [
   { month: 'ກັນຍາ 26 (ຄາດກາ)', projectedIncome: 35000000, projectedExpense: 6200000, projectedProfit: 28800000, confidence: '95%' },
   { month: 'ຕຸລາ 26 (ຄາດກາ)', projectedIncome: 38000000, projectedExpense: 6400000, projectedProfit: 31600000, confidence: '92%' },
