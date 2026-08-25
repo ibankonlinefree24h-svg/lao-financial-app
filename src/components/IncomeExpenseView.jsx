@@ -82,6 +82,7 @@ export default function IncomeExpenseView({
   const [activeMainTab, setActiveMainTab] = useState('GRANULAR_TABLE'); // 'GRANULAR_TABLE', 'CONTINUOUS_CHART', 'PLANNING_SUITE', 'WALLETS', 'TRANSACTIONS'
   const [planningSubTab, setPlanningSubTab] = useState('AI_TAX'); // 'AI_TAX', 'INVESTMENT', 'SEASONAL', 'PROJECTION', 'BUDGET', 'SIMULATOR'
   const [activeTypeFilter, setActiveTypeFilter] = useState('ALL');
+  const [categoryFilter, setCategoryFilter] = useState('ທັງໝົດ');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSlipUrl, setSelectedSlipUrl] = useState(null);
   const [activeReceiptTx, setActiveReceiptTx] = useState(null);
