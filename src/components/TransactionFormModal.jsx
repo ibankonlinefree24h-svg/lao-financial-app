@@ -158,15 +158,13 @@ export default function TransactionFormModal({ defaultType = 'INCOME', onClose, 
             </div>
 
             <div className="form-group">
-              <label>ເລືອກສະກຸນເງິນ (4 Currencies) *</label>
+              <label>ເລືອກສະກຸນເງິນ (2 Currencies: LAK & RUB) *</label>
               <select
                 value={formData.currency}
                 onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
               >
                 <option value="LAK">₭ LAK (ເງິນກີບ)</option>
-                <option value="THB">฿ THB (ເງິນບາດ)</option>
-                <option value="USD">$ USD (ເງິນໂດລາ)</option>
-                <option value="CNY">¥ CNY (ເງິນຢວນ)</option>
+                <option value="RUB">₽ RUB (ເງິນລັດເຊຍ)</option>
               </select>
             </div>
 

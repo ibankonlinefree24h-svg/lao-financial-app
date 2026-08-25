@@ -3,10 +3,7 @@
 export const defaultExchangeRates = {
   lak: 1,
   rubToLak: 275,      // 1 RUB = 275 LAK
-  thbToLak: 630,      // 1 THB = 630 LAK
-  usdToLak: 22500,    // 1 USD = 22,500 LAK
-  cnyToLak: 3100,     // 1 CNY = 3,100 LAK
-  lastUpdated: '2026-08-24'
+  lastUpdated: '2026-08-25'
 };
 
 export const defaultExchangeRate = defaultExchangeRates;
@@ -14,9 +11,6 @@ export const defaultExchangeRate = defaultExchangeRates;
 export function convertToLAK(amount, currency, rates = defaultExchangeRates) {
   const currUpper = (currency || 'LAK').toUpperCase();
   if (currUpper === 'RUB') return Math.round(amount * (rates.rubToLak || 275));
-  if (currUpper === 'THB') return Math.round(amount * (rates.thbToLak || 630));
-  if (currUpper === 'USD') return Math.round(amount * (rates.usdToLak || 22500));
-  if (currUpper === 'CNY') return Math.round(amount * (rates.cnyToLak || 3100));
   return Math.round(amount);
 }
 

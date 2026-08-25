@@ -346,7 +346,7 @@ export default function IncomeExpenseView({
             <div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>💵 ຍອດເງິນສົດຕົວຈິງແຕ່ລະສະກຸນ & ສະຫຼຸບລວມເປັນເງິນກີບ</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                ສະແດງຍອດເງິນສົດປະຈຸບັນຂອງ ₭ LAK, ฿ THB, $ USD, ¥ CNY ແລະ ສະຫຼຸບລວມເປັນເງິນກີບ LAK
+                ສະແດງຍອດເງິນສົດປະຈຸບັນຂອງ 🇱🇦 ₭ LAK (ເງິນກີບ) & 🇷🇺 ₽ RUB (ເງິນລັດເຊຍ) ແລະ ສະຫຼຸບລວມເປັນເງິນກີບ LAK
               </p>
             </div>
           </div>
