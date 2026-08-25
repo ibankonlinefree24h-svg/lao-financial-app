@@ -276,7 +276,7 @@ export default function IncomeExpenseView({
             <RefreshCw size={16} />
           </div>
           <span style={{ fontWeight: 600, fontSize: '0.88rem' }}>
-            ອັດຕາແລກປ່ຽນ 4 ສະກຸນ: <strong>1 THB = {rates.thbToLak} ₭</strong> | <strong>1 USD = {rates.usdToLak.toLocaleString()} ₭</strong> | <strong>1 CNY = {rates.cnyToLak.toLocaleString()} ₭</strong>
+            ອັດຕາແລກປ່ຽນສະກຸນເງິນ: <strong>1 RUB (ຣູບລ໌ ລັດເຊຍ) = {rates.rubToLak || 275} ₭ LAK</strong>
           </span>
         </div>
 
@@ -359,54 +359,30 @@ export default function IncomeExpenseView({
           </div>
         </div>
 
-        {/* 4 Currency Real Balance Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        {/* 2 Currency Real Balance Cards Grid (LAK & Russian RUB) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px' }}>
           {/* LAK Card */}
-          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #34d399', borderRadius: '16px' }}>
+          <div className="glass-panel" style={{ padding: '20px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #34d399', borderRadius: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.lak.flag} ເງິນກີບ LAK</span>
-              <span className="tag tag-emerald" style={{ fontSize: '0.72rem' }}>{multiCurrencyRealBalances.lak.percentOfTotal}% ຂອງຍອດລວມ</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#34d399' }}>{multiCurrencyRealBalances.lak.flag} ເງິນກີບ LAK</span>
+              <span className="tag tag-emerald" style={{ fontSize: '0.78rem' }}>{multiCurrencyRealBalances.lak.percentOfTotal}% ຂອງຍອດລວມ</span>
             </div>
-            <h3 style={{ fontSize: '1.4rem', color: '#34d399', margin: '8px 0 2px', fontWeight: 800 }}>
+            <h3 style={{ fontSize: '1.6rem', color: '#34d399', margin: '10px 0 4px', fontWeight: 800 }}>
               ₭ {multiCurrencyRealBalances.lak.amount.toLocaleString()}
             </h3>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.lak.lakEquivalent.toLocaleString()}</div>
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.lak.lakEquivalent.toLocaleString()} LAK</div>
           </div>
 
-          {/* THB Card */}
-          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #38bdf8', borderRadius: '16px' }}>
+          {/* Russian RUB Card */}
+          <div className="glass-panel" style={{ padding: '20px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #38bdf8', borderRadius: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.thb.flag} ເງິນບາດ THB</span>
-              <span className="tag tag-blue" style={{ fontSize: '0.72rem' }}>1 THB = {rates.thbToLak} ₭</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38bdf8' }}>{multiCurrencyRealBalances.rub.flag} ເງິນລັດເຊຍ RUB</span>
+              <span className="tag tag-blue" style={{ fontSize: '0.78rem' }}>1 RUB = {rates.rubToLak || 275} ₭</span>
             </div>
-            <h3 style={{ fontSize: '1.4rem', color: '#38bdf8', margin: '8px 0 2px', fontWeight: 800 }}>
-              ฿ {multiCurrencyRealBalances.thb.amount.toLocaleString()}
+            <h3 style={{ fontSize: '1.6rem', color: '#38bdf8', margin: '10px 0 4px', fontWeight: 800 }}>
+              ₽ {multiCurrencyRealBalances.rub.amount.toLocaleString()} RUB
             </h3>
-            <div style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 700 }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.thb.lakEquivalent.toLocaleString()} LAK</div>
-          </div>
-
-          {/* USD Card */}
-          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #a855f7', borderRadius: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.usd.flag} ເງິນໂດລາ USD</span>
-              <span className="tag tag-purple" style={{ fontSize: '0.72rem' }}>1 USD = {rates.usdToLak.toLocaleString()} ₭</span>
-            </div>
-            <h3 style={{ fontSize: '1.4rem', color: '#c084fc', margin: '8px 0 2px', fontWeight: 800 }}>
-              $ {multiCurrencyRealBalances.usd.amount.toLocaleString()}
-            </h3>
-            <div style={{ fontSize: '0.78rem', color: '#c084fc', fontWeight: 700 }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.usd.lakEquivalent.toLocaleString()} LAK</div>
-          </div>
-
-          {/* CNY Card */}
-          <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,0,0,0.25)', borderLeft: '4px solid #fbbf24', borderRadius: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{multiCurrencyRealBalances.cny.flag} ເງິນຢວນ CNY</span>
-              <span className="tag tag-gold" style={{ fontSize: '0.72rem' }}>1 CNY = {rates.cnyToLak.toLocaleString()} ₭</span>
-            </div>
-            <h3 style={{ fontSize: '1.4rem', color: '#fbbf24', margin: '8px 0 2px', fontWeight: 800 }}>
-              ¥ {multiCurrencyRealBalances.cny.amount.toLocaleString()}
-            </h3>
-            <div style={{ fontSize: '0.78rem', color: '#fbbf24', fontWeight: 700 }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.cny.lakEquivalent.toLocaleString()} LAK</div>
+            <div style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 700 }}>ມູນຄ່າເປັນກີບ: ₭ {multiCurrencyRealBalances.rub.lakEquivalent.toLocaleString()} LAK</div>
           </div>
         </div>
       </div>
