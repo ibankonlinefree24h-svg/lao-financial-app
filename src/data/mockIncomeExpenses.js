@@ -1,11 +1,11 @@
-// Multi-Year Financial Dataset with Real 4-Currency Balances, Recurring Expenses, Interest-Expense Ratio & Profit Simulator
+// Multi-Year Financial Dataset with Real LAK & RUB Balances & Combined LAK Net Worth Summary
 
 export const defaultExchangeRates = {
   lak: 1,
+  rubToLak: 275,      // 1 RUB = 275 LAK
   thbToLak: 630,      // 1 THB = 630 LAK
   usdToLak: 22500,    // 1 USD = 22,500 LAK
   cnyToLak: 3100,     // 1 CNY = 3,100 LAK
-  rubToLak: 275,      // 1 RUB = 275 LAK
   lastUpdated: '2026-08-24'
 };
 
@@ -13,52 +13,34 @@ export const defaultExchangeRate = defaultExchangeRates;
 
 export function convertToLAK(amount, currency, rates = defaultExchangeRates) {
   const currUpper = (currency || 'LAK').toUpperCase();
+  if (currUpper === 'RUB') return Math.round(amount * (rates.rubToLak || 275));
   if (currUpper === 'THB') return Math.round(amount * (rates.thbToLak || 630));
   if (currUpper === 'USD') return Math.round(amount * (rates.usdToLak || 22500));
   if (currUpper === 'CNY') return Math.round(amount * (rates.cnyToLak || 3100));
-  if (currUpper === 'RUB') return Math.round(amount * (rates.rubToLak || 275));
   return Math.round(amount);
 }
 
-// Actual Multi-Currency Cash & Bank Balances (4 Currencies)
+// Actual Multi-Currency Cash & Bank Balances (LAK & Russian RUB)
 export const multiCurrencyRealBalances = {
   lak: {
     symbol: '₭',
     currency: 'LAK',
     amount: 45200000,
     lakEquivalent: 45200000,
-    percentOfTotal: 14.4,
+    percentOfTotal: 24.7,
     color: '#34d399',
     flag: '🇱🇦'
   },
-  thb: {
-    symbol: '฿',
-    currency: 'THB',
-    amount: 150000,
-    lakEquivalent: 94500000, // 150,000 * 630
-    percentOfTotal: 30.1,
+  rub: {
+    symbol: '₽',
+    currency: 'RUB',
+    amount: 500000,
+    lakEquivalent: 137500000, // 500,000 * 275
+    percentOfTotal: 75.3,
     color: '#38bdf8',
-    flag: '🇹🇭'
+    flag: '🇷🇺'
   },
-  usd: {
-    symbol: '$',
-    currency: 'USD',
-    amount: 5000,
-    lakEquivalent: 112500000, // 5,000 * 22,500
-    percentOfTotal: 35.8,
-    color: '#a855f7',
-    flag: '🇺🇸'
-  },
-  cny: {
-    symbol: '¥',
-    currency: 'CNY',
-    amount: 20000,
-    lakEquivalent: 62000000, // 20,000 * 3,100
-    percentOfTotal: 19.7,
-    color: '#fbbf24',
-    flag: '🇨🇳'
-  },
-  totalCombinedLAK: 314200000 // 45.2M + 94.5M + 112.5M + 62M
+  totalCombinedLAK: 182700000 // 45.2M + 137.5M
 };
 
 // Recurring Monthly Expenses Dataset
@@ -229,7 +211,7 @@ export const initialTransactions = [
     walletId: 'W-BCEL',
     walletName: 'BCEL One',
     amount: 2500,
-    currency: 'THB',
+    currency: 'RUB',
     paymentMethod: 'TRANSFER',
     tags: ['#FacebookAds', '#ໂຄສະນາຫາລູກຄ້າ'],
     customerName: 'Facebook Ads',

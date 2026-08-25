@@ -12,11 +12,14 @@ if "%commit_msg%"=="" set commit_msg="Auto-update Lao Financial App"
 
 git commit -m "%commit_msg%"
 
-echo 3. Pushing code to GitHub...
+echo 3. Pushing code to GitHub main branch...
 git push origin main
+
+echo 4. Building and Deploying to GitHub Pages...
+call npm run deploy
 
 echo.
 echo ========================================================
-echo   ✨ SUCCESS! Code pushed to GitHub.
-echo   🌐 Vercel is auto-deploying your live app now!
+echo   ✨ SUCCESS! Code pushed to GitHub & Deployed to GitHub Pages!
+echo   🌐 Live App: https://ibankonlinefree24h-svg.github.io/lao-financial-app/
 echo ========================================================
