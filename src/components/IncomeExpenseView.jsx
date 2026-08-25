@@ -774,7 +774,7 @@ export default function IncomeExpenseView({
                 </tr>
               </thead>
               <tbody>
-                {continuous24Months.map((m, idx) => {
+                {[...continuous24Months].reverse().map((m, idx) => {
                   const is2026 = m.year === '2026';
                   return (
                     <tr key={idx} style={is2026 ? { background: 'rgba(16, 185, 129, 0.04)' } : {}}>
