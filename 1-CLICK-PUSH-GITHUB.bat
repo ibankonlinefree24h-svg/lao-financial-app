@@ -5,7 +5,7 @@ echo ========================================================
 echo   🚀 1-CLICK UPLOAD LAO FINANCIAL APP TO GITHUB
 echo ========================================================
 echo.
-cd /d f:\B
+cd /d f:\app
 git remote set-url origin https://github.com/ibankonlinefree24h-svg/lao-financial-app.git
 git branch -M main
 git push -u origin main
