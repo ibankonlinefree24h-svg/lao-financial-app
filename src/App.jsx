@@ -36,9 +36,10 @@ import InvoiceModal from './components/InvoiceModal';
 import WhatsformModal from './components/WhatsformModal';
 import IncomeExpenseView from './components/IncomeExpenseView';
 import TransactionFormModal from './components/TransactionFormModal';
+import CanvaInvoiceView from './components/CanvaInvoiceView';
 
 export default function App() {
-  const [activeMenuId, setActiveMenuId] = useState(4); // Default to Menu 4: ລາຍຮັບ-ລາຍຈ່າຍ for testing
+  const [activeMenuId, setActiveMenuId] = useState(5); // Default to Menu 5: ໃບແຈ້ງໜີ້ (Canva Template)
   const [theme, setTheme] = useState('dark');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -102,12 +103,21 @@ export default function App() {
     },
     {
       id: 5,
+      title: 'ໃບແຈ້ງໜີ້ (Invoice)',
+      subtitle: 'Official Canva Invoice',
+      icon: FileText,
+      color: '#38bdf8',
+      gradient: 'linear-gradient(135deg, #0284c7, #38bdf8)',
+      badge: 'II.5'
+    },
+    {
+      id: 6,
       title: 'ຖານປັບແຕ່ງການຕັ້ງຄ່າ',
       subtitle: 'System Configuration',
       icon: Settings,
       color: '#ec4899',
       gradient: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
-      badge: 'II.5'
+      badge: 'II.6'
     }
   ];
 
@@ -596,7 +606,13 @@ export default function App() {
               onUpdateExchangeRate={handleUpdateExchangeRate}
             />
           )}
-          {activeMenuId === 5 && <SettingsPreview />}
+          {activeMenuId === 5 && (
+            <CanvaInvoiceView
+              customers={customers}
+              loans={monthlyLoans}
+            />
+          )}
+          {activeMenuId === 6 && <SettingsPreview />}
         </main>
       </div>
 
