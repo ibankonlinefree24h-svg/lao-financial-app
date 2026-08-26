@@ -22,7 +22,8 @@ import {
   Sliders,
   UserPlus,
   Palette,
-  Check
+  Check,
+  FileText
 } from 'lucide-react';
 import { initialCustomers } from './data/mockCustomers';
 import { initialMonthlyLoans } from './data/mockMonthlyLoans';
