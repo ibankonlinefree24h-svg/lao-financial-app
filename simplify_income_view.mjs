@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import fs from 'fs';
+
+const filepath = 'F:/app/src/components/IncomeExpenseView.jsx';
+
+const simplifiedContent = `import React, { useState } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -105,7 +109,7 @@ export default function IncomeExpenseView({
   });
 
   const handleExportData = (type) => {
-    alert(`📥 ກຳລັງດາວໂຫຼດຂໍ້ມູນລາຍຮັບ-ລາຍຈ່າຍ (${type.toUpperCase()}) 24 ເດືອນ...`);
+    alert(\`📥 ກຳລັງດາວໂຫຼດຂໍ້ມູນລາຍຮັບ-ລາຍຈ່າຍ (\${type.toUpperCase()}) 24 ເດືອນ...\`);
   };
 
   return (
@@ -239,7 +243,7 @@ export default function IncomeExpenseView({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
-            className={`filter-pill-btn ${activeMainTab === 'TABLE' ? 'active' : ''}`}
+            className={\`filter-pill-btn \${activeMainTab === 'TABLE' ? 'active' : ''}\`}
             onClick={() => setActiveMainTab('TABLE')}
             style={{ padding: '10px 22px', fontSize: '0.9rem', borderRadius: '12px', fontWeight: 700 }}
           >
@@ -247,7 +251,7 @@ export default function IncomeExpenseView({
           </button>
 
           <button
-            className={`filter-pill-btn ${activeMainTab === 'TRANSACTIONS' ? 'active' : ''}`}
+            className={\`filter-pill-btn \${activeMainTab === 'TRANSACTIONS' ? 'active' : ''}\`}
             onClick={() => setActiveMainTab('TRANSACTIONS')}
             style={{ padding: '10px 22px', fontSize: '0.9rem', borderRadius: '12px', fontWeight: 700 }}
           >
@@ -288,8 +292,8 @@ export default function IncomeExpenseView({
               return (
                 <div key={i} style={{ flex: 1, minWidth: '45px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
                   <div style={{ display: 'flex', gap: '2px', alignItems: 'flex-end', width: '100%', justifyContent: 'center', height: '80%' }}>
-                    <div style={{ width: '40%', background: is2026 ? '#34d399' : '#38bdf8', height: `${incomeHeight}%`, borderRadius: '3px 3px 0 0' }} title={`${d.month}: ₭ ${d.income.toLocaleString()}`} />
-                    <div style={{ width: '40%', background: '#f87171', height: `${expenseHeight}%`, borderRadius: '3px 3px 0 0' }} title={`${d.month}: ₭ ${d.expense.toLocaleString()}`} />
+                    <div style={{ width: '40%', background: is2026 ? '#34d399' : '#38bdf8', height: \`\${incomeHeight}%\`, borderRadius: '3px 3px 0 0' }} title={\`\${d.month}: ₭ \${d.income.toLocaleString()}\`} />
+                    <div style={{ width: '40%', background: '#f87171', height: \`\${expenseHeight}%\`, borderRadius: '3px 3px 0 0' }} title={\`\${d.month}: ₭ \${d.expense.toLocaleString()}\`} />
                   </div>
                   <span style={{ fontSize: '0.65rem', color: is2026 ? '#34d399' : 'var(--text-muted)', marginTop: '4px', fontWeight: is2026 ? 800 : 500 }}>
                     {d.month}
@@ -387,13 +391,13 @@ export default function IncomeExpenseView({
 
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
               <div className="filter-pill-buttons">
-                <button className={`filter-pill-btn ${activeTypeFilter === 'ALL' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('ALL')}>
+                <button className={\`filter-pill-btn \${activeTypeFilter === 'ALL' ? 'active' : ''}\`} onClick={() => setActiveTypeFilter('ALL')}>
                   ທັງໝົດ
                 </button>
-                <button className={`filter-pill-btn ${activeTypeFilter === 'INCOME' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('INCOME')}>
+                <button className={\`filter-pill-btn \${activeTypeFilter === 'INCOME' ? 'active' : ''}\`} onClick={() => setActiveTypeFilter('INCOME')}>
                   🟢 ລາຍຮັບ
                 </button>
-                <button className={`filter-pill-btn ${activeTypeFilter === 'EXPENSE' ? 'active' : ''}`} onClick={() => setActiveTypeFilter('EXPENSE')}>
+                <button className={\`filter-pill-btn \${activeTypeFilter === 'EXPENSE' ? 'active' : ''}\`} onClick={() => setActiveTypeFilter('EXPENSE')}>
                   🔴 ລາຍຈ່າຍ
                 </button>
               </div>
@@ -453,7 +457,7 @@ export default function IncomeExpenseView({
                     <tr key={tx.id}>
                       <td style={{ fontSize: '0.82rem' }}>{tx.date}</td>
                       <td>
-                        <span className={`status-badge-pill ${isIncome ? 'green' : 'red'}`}>
+                        <span className={\`status-badge-pill \${isIncome ? 'green' : 'red'}\`}>
                           {isIncome ? '🟢 ລາຍຮັບ' : '🔴 ລາຍຈ່າຍ'}
                         </span>
                       </td>
@@ -461,7 +465,7 @@ export default function IncomeExpenseView({
                       <td>{tx.walletName}</td>
                       <td>{tx.customerName || '-'}</td>
                       <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
-                        {tx.currency === 'LAK' ? `₭ ${tx.amount.toLocaleString()}` : `${tx.amount.toLocaleString()} ${tx.currency}`}
+                        {tx.currency === 'LAK' ? \`₭ \${tx.amount.toLocaleString()}\` : \`\${tx.amount.toLocaleString()} \${tx.currency}\`}
                       </td>
                       <td style={{ fontWeight: 700, color: isIncome ? '#34d399' : '#f87171' }}>
                         ₭ {convertedLAK.toLocaleString()}
@@ -514,3 +518,7 @@ export default function IncomeExpenseView({
     </div>
   );
 }
+`;
+
+fs.writeFileSync(filepath, simplifiedContent, 'utf8');
+console.log('Successfully written streamlined IncomeExpenseView.jsx!');
