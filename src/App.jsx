@@ -40,7 +40,7 @@ import TransactionFormModal from './components/TransactionFormModal';
 import CanvaInvoiceView from './components/CanvaInvoiceView';
 
 export default function App() {
-  const [activeMenuId, setActiveMenuId] = useState(5); // Default to Menu 5: ໃບແຈ້ງໜີ້ (Canva Template)
+  const [activeMenuId, setActiveMenuId] = useState(2); // Default to Menu 2: ຖານຂໍ້ມູນລູກຄ້າ
   const [theme, setTheme] = useState('dark');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -158,6 +158,12 @@ export default function App() {
     setCustomers((prev) => prev.map((c) => (c.id === updatedCustomer.id ? updatedCustomer : c)));
     if (activeDetailCustomer?.id === updatedCustomer.id) {
       setActiveDetailCustomer(updatedCustomer);
+    }
+  };
+
+  const handleDeleteCustomer = (custId) => {
+    if (window.confirm('ທ່ານຕ້ອງການລຶບຂໍ້ມູນລູກຄ້ານີ້ແທ້ບໍ່?')) {
+      setCustomers((prev) => prev.filter((c) => c.id !== custId));
     }
   };
 
@@ -464,112 +470,116 @@ export default function App() {
 
       {/* Main Layout Area */}
       <div className="main-layout">
-        {/* Topbar Header */}
-        <header className="topbar">
-          <div className="topbar-left">
-            <button
-              className="mobile-toggle"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            >
-              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-            <div className="breadcrumb">
-              <span>II. ເມນູ</span>
-              <ChevronRight size={14} />
-              <span className="active-crumb">{currentMenu.id}. {currentMenu.title}</span>
-            </div>
-          </div>
-
-          <div className="topbar-right">
-            <button
-              className="icon-btn"
-              onClick={toggleTheme}
-              title={theme === 'dark' ? 'ປ່ຽນເປັນ Theme ແຈ້ງ' : 'ປ່ຽນເປັນ Theme ມືດ'}
-            >
-              {theme === 'dark' ? <Sun size={19} color="#fbbf24" /> : <Moon size={19} color="#6366f1" />}
-            </button>
-
-            <button className="icon-btn" title="ການແຈ້ງເຕືອນ">
-              <Bell size={19} />
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '9px',
-                  right: '9px',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: currentMenu.color,
-                  boxShadow: `0 0 8px ${currentMenu.color}`
-                }}
-              />
-            </button>
-
-            <div className="user-profile">
-              <div className="avatar" style={{ background: currentMenu.gradient }}>AD</div>
-              <div className="user-info">
-                <span className="user-name">ຜູ້ດູແລລະບົບ</span>
-                <span className="user-role">Administrator</span>
+        {/* Topbar Header (Hidden in Menu 2 to match exact full-width design) */}
+        {activeMenuId !== 2 && (
+          <header className="topbar">
+            <div className="topbar-left">
+              <button
+                className="mobile-toggle"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+              <div className="breadcrumb">
+                <span>II. ເມນູ</span>
+                <ChevronRight size={14} />
+                <span className="active-crumb">{currentMenu.id}. {currentMenu.title}</span>
               </div>
             </div>
-          </div>
-        </header>
+
+            <div className="topbar-right">
+              <button
+                className="icon-btn"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? 'ປ່ຽນເປັນ Theme ແຈ້ງ' : 'ປ່ຽນເປັນ Theme ມືດ'}
+              >
+                {theme === 'dark' ? <Sun size={19} color="#fbbf24" /> : <Moon size={19} color="#6366f1" />}
+              </button>
+
+              <button className="icon-btn" title="ການແຈ້ງເຕືອນ">
+                <Bell size={19} />
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '9px',
+                    right: '9px',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: currentMenu.color,
+                    boxShadow: `0 0 8px ${currentMenu.color}`
+                  }}
+                />
+              </button>
+
+              <div className="user-profile">
+                <div className="avatar" style={{ background: currentMenu.gradient }}>AD</div>
+                <div className="user-info">
+                  <span className="user-name">ຜູ້ດູແລລະບົບ</span>
+                  <span className="user-role">Administrator</span>
+                </div>
+              </div>
+            </div>
+          </header>
+        )}
 
         {/* Content Body Area */}
-        <main className="content-wrapper">
-          {/* Header Banner */}
-          <div
-            className="content-banner"
-            style={{
-              '--banner-color': currentMenu.color,
-              '--banner-accent': currentMenu.color,
-              borderColor: `${currentMenu.color}40`
-            }}
-          >
-            <div className="banner-accent-bg" />
-            <div className="banner-header">
-              <div
-                className="banner-icon-box"
-                style={{
-                  background: `linear-gradient(135deg, ${currentMenu.color}33, rgba(255,255,255,0.03))`,
-                  borderColor: `${currentMenu.color}66`
-                }}
-              >
-                {React.createElement(currentMenu.icon, { size: 30, color: currentMenu.color })}
-              </div>
-              <div className="banner-title-group">
-                <h2>
-                  {currentMenu.id}. {currentMenu.title}
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      padding: '4px 12px',
-                      borderRadius: '999px',
-                      background: `${currentMenu.color}22`,
-                      color: currentMenu.color,
-                      border: `1px solid ${currentMenu.color}44`
-                    }}
-                  >
-                    {currentMenu.subtitle}
-                  </span>
-                </h2>
-                <p>ລະບົບບັນທຶກ ແລະ ວິເຄາະລາຍຮັບ-ລາຍຈ່າຍ, ອັດຕາແລກປ່ຽນ ຣູບລ໌-ກີບ, ສະລິບການໂອນ & ງົບປະມານການເງິນອັດໂຕໂນມັດ</p>
-              </div>
-            </div>
-
+        <main className={`content-wrapper ${activeMenuId === 2 ? 'no-padding' : ''}`} style={activeMenuId === 2 ? { padding: 0 } : {}}>
+          {/* Header Banner (Hidden in Menu 2 to match exact design) */}
+          {activeMenuId !== 2 && (
             <div
-              className="step-tag"
+              className="content-banner"
               style={{
-                background: `${currentMenu.color}18`,
-                borderColor: `${currentMenu.color}40`,
-                color: currentMenu.color
+                '--banner-color': currentMenu.color,
+                '--banner-accent': currentMenu.color,
+                borderColor: `${currentMenu.color}40`
               }}
             >
-              <Sparkles size={15} />
-              <span>ຂັ້ນຕອນທີ 4: ລາຍຮັບ-ລາຍຈ່າຍ ພ້ອມໃຊ້ງານ | ຖ້າສວຍງາມ ແລະ ຖືກຕ້ອງ ສາມາດສົ່ງຂັ້ນຕອນຕໍ່ໄປໄດ້</span>
+              <div className="banner-accent-bg" />
+              <div className="banner-header">
+                <div
+                  className="banner-icon-box"
+                  style={{
+                    background: `linear-gradient(135deg, ${currentMenu.color}33, rgba(255,255,255,0.03))`,
+                    borderColor: `${currentMenu.color}66`
+                  }}
+                >
+                  {React.createElement(currentMenu.icon, { size: 30, color: currentMenu.color })}
+                </div>
+                <div className="banner-title-group">
+                  <h2>
+                    {currentMenu.id}. {currentMenu.title}
+                    <span
+                      style={{
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        padding: '4px 12px',
+                        borderRadius: '999px',
+                        background: `${currentMenu.color}22`,
+                        color: currentMenu.color,
+                        border: `1px solid ${currentMenu.color}44`
+                      }}
+                    >
+                      {currentMenu.subtitle}
+                    </span>
+                  </h2>
+                  <p>ລະບົບບັນທຶກ ແລະ ວິເຄາະລາຍຮັບ-ລາຍຈ່າຍ, ອັດຕາແລກປ່ຽນ ຣູບລ໌-ກີບ, ສະລິບການໂອນ & ງົບປະມານການເງິນອັດໂຕໂນມັດ</p>
+                </div>
+              </div>
+
+              <div
+                className="step-tag"
+                style={{
+                  background: `${currentMenu.color}18`,
+                  borderColor: `${currentMenu.color}40`,
+                  color: currentMenu.color
+                }}
+              >
+                <Sparkles size={15} />
+                <span>ຂັ້ນຕອນທີ 4: ລາຍຮັບ-ລາຍຈ່າຍ ພ້ອມໃຊ້ງານ | ຖ້າສວຍງາມ ແລະ ຖືກຕ້ອງ ສາມາດສົ່ງຂັ້ນຕອນຕໍ່ໄປໄດ້</span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Dynamic Views */}
           {activeMenuId === 1 && <DashboardPreview />}
@@ -580,7 +590,11 @@ export default function App() {
               onEditCustomer={(cust) => setActiveFormCustomer(cust)}
               onViewCustomerDetail={(cust) => setActiveDetailCustomer(cust)}
               onOpenContract={(cust) => setActiveContractCustomer(cust)}
+              onDeleteCustomer={handleDeleteCustomer}
               onUpdateManualStatus={handleUpdateManualStatus}
+              onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+              onToggleTheme={toggleTheme}
+              theme={theme}
             />
           )}
           {activeMenuId === 3 && (
