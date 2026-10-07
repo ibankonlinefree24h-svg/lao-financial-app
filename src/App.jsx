@@ -60,10 +60,78 @@ export default function App() {
   const [transactions, setTransactions] = useState(initialTransactions);
   const [exchangeRate, setExchangeRate] = useState(defaultExchangeRate);
   const [activeTransactionFormType, setActiveTransactionFormType] = useState(null); // null, 'INCOME', 'EXPENSE'
+  const [newSubmissionToast, setNewSubmissionToast] = useState(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Real-time API, Webhook & BroadcastChannel Listener for incoming customer form submissions
+  useEffect(() => {
+    const handleReceiveNewSubmission = (newCust) => {
+      if (!newCust || !newCust.name) return;
+      setCustomers((prev) => {
+        if (prev.some((c) => c.id === newCust.id || c.code === newCust.code)) return prev;
+        return [newCust, ...prev];
+      });
+      setNewSubmissionToast(newCust);
+      setTimeout(() => setNewSubmissionToast(null), 7000);
+    };
+
+    // 1. Initial fetch from API / Submissions
+    const fetchSubmissions = async () => {
+      try {
+        const res = await fetch('/api/submissions');
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list) && list.length > 0) {
+            setCustomers((prev) => {
+              const existingIds = new Set(prev.map((c) => c.id));
+              const newItems = list.filter((item) => !existingIds.has(item.id));
+              return newItems.length > 0 ? [...newItems, ...prev] : prev;
+            });
+          }
+        }
+      } catch (err) {
+        // ignore offline
+      }
+    };
+    fetchSubmissions();
+
+    // 2. BroadcastChannel Listener for instant inter-tab sync
+    let bc = null;
+    try {
+      if ('BroadcastChannel' in window) {
+        bc = new BroadcastChannel('ibank_customer_channel');
+        bc.onmessage = (event) => {
+          const newCust = event.data;
+          if (newCust && newCust.id) {
+            handleReceiveNewSubmission(newCust);
+          }
+        };
+      }
+    } catch (e) {}
+
+    // 3. LocalStorage StorageEvent Listener for cross-window sync
+    const handleStorageChange = (e) => {
+      if (e.key === 'ibank_latest_customer_submission' && e.newValue) {
+        try {
+          const newCust = JSON.parse(e.newValue);
+          handleReceiveNewSubmission(newCust);
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // 4. Polling interval to check API every 4 seconds
+    const intervalId = setInterval(fetchSubmissions, 4000);
+
+    return () => {
+      if (bc) bc.close();
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
+  }, []);
 
   const menuItems = [
     {
@@ -692,6 +760,58 @@ export default function App() {
           onClose={() => setActiveTransactionFormType(null)}
           onSave={handleSaveTransaction}
         />
+      )}
+
+      {/* Real-time Toast Notification when customer submits form */}
+      {newSubmissionToast && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            zIndex: 999999,
+            background: 'linear-gradient(135deg, #10b981, #059669)',
+            color: 'white',
+            padding: '16px 22px',
+            borderRadius: '18px',
+            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.45), 0 0 25px rgba(16, 185, 129, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            minWidth: '340px'
+          }}
+        >
+          <div style={{ fontSize: '2rem' }}>🎉</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, fontSize: '0.98rem' }}>
+              ມີຄຳຮ້ອງຂໍສິນເຊື່ອໃໝ່ເຂົ້າມາ!
+            </div>
+            <div style={{ fontSize: '0.86rem', opacity: 0.95, marginTop: '2px' }}>
+              {newSubmissionToast.name} | ຍອດກູ້: {newSubmissionToast.currentLoanLAK ? `₭ ${newSubmissionToast.currentLoanLAK.toLocaleString()} LAK` : `${newSubmissionToast.currentLoanRUB?.toLocaleString()} RUB`}
+            </div>
+            <div style={{ fontSize: '0.78rem', opacity: 0.9, marginTop: '3px' }}>
+              ສະຖານະ: 🟡 ລໍຖ້າກວດສອບ (ກວດສອບໃນເມນູ 2)
+            </div>
+          </div>
+          <button
+            onClick={() => setNewSubmissionToast(null)}
+            style={{
+              background: 'rgba(255,255,255,0.25)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '28px',
+              height: '28px',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800
+            }}
+          >
+            ✕
+          </button>
+        </div>
       )}
     </div>
   );

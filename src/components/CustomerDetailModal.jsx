@@ -101,9 +101,34 @@ export default function CustomerDetailModal({ customer, onClose, onOpenContract,
             </div>
           </div>
 
-          <button className="icon-btn" onClick={onClose}>
-            <X size={20} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {customer.status === 'ລໍຖ້າກວດສອບ' && (
+              <button
+                onClick={() => {
+                  onUpdateCustomer({ ...customer, status: 'ກຳລັງກູ້' });
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '8px 16px',
+                  fontSize: '0.86rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+                }}
+              >
+                ✓ ອະນຸມັດສິນເຊື່ອ
+              </button>
+            )}
+            <button className="icon-btn" onClick={onClose}>
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -155,23 +180,25 @@ export default function CustomerDetailModal({ customer, onClose, onOpenContract,
               </div>
               <div className="detail-item">
                 <span className="detail-label">ອາຍຸ:</span>
-                <span className="detail-value">{customer.age} ປີ</span>
+                <span className="detail-value">{customer.age || '-'} ປີ</span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">ອາຊີບ:</span>
-                <span className="detail-value">{customer.occupation}</span>
+                <span className="detail-value">{customer.occupation || '-'}</span>
               </div>
               <div className="detail-item full-width">
                 <span className="detail-label">ທີ່ຢູ່ປະຈຸບັນ:</span>
                 <span className="detail-value">
-                  ບ້ານ {customer.currentAddress?.village}, ເມືອງ {customer.currentAddress?.district}, ແຂວງ {customer.currentAddress?.province}
+                  {typeof customer.currentAddress === 'object'
+                    ? `ບ້ານ ${customer.currentAddress?.village || ''}, ເມືອງ ${customer.currentAddress?.district || ''}, ແຂວງ ${customer.currentAddress?.province || ''}`
+                    : (customer.currentAddress || '-')}
                 </span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">ເບີໂທ WhatsApp:</span>
                 <span className="detail-value highlight-link">
                   <Phone size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                  {customer.whatsappNumber}
+                  {customer.whatsapp || customer.whatsappNumber || '-'}
                 </span>
               </div>
               <div className="detail-item">
@@ -184,6 +211,14 @@ export default function CustomerDetailModal({ customer, onClose, onOpenContract,
                   <span className="detail-value">-</span>
                 )}
               </div>
+              {customer.bankName && (
+                <div className="detail-item full-width" style={{ background: 'rgba(37,99,235,0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(37,99,235,0.2)' }}>
+                  <span className="detail-label" style={{ color: '#60a5fa', fontWeight: 700 }}>🏦 ຂໍ້ມູນທະນາຄານຮັບເງິນໂອນ:</span>
+                  <div style={{ marginTop: '6px', fontSize: '0.88rem' }}>
+                    <strong>ທະນາຄານ:</strong> {customer.bankName} | <strong>ຊື່ບັນຊີ:</strong> {customer.accountName || customer.name} | <strong>ຮູບແບບ:</strong> {customer.payoutMethod || 'QR Code'}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

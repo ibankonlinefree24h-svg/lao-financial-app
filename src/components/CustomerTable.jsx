@@ -398,6 +398,7 @@ export default function CustomerTable({
               }}
             >
               <option value="ALL">ທຸກສະຖານະ</option>
+              <option value="ລໍຖ້າກວດສອບ">🟡 ລໍຖ້າກວດສອບ (ໃໝ່)</option>
               <option value="ກຳລັງກູ້">ກຳລັງກູ້</option>
               <option value="ອະນຸມັດ">ອະນຸມັດ</option>
             </select>
@@ -581,20 +582,41 @@ export default function CustomerTable({
                   >
                     {/* 1. ສະຖານະ */}
                     <td style={{ padding: '14px 14px' }}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '5px 14px',
-                          borderRadius: '9999px',
-                          fontSize: '0.8rem',
-                          fontWeight: 600,
-                          background: isApproved ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.12)',
-                          color: isApproved ? '#34d399' : '#e2e8f0',
-                          border: `1px solid ${isApproved ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.15)'}`
-                        }}
-                      >
-                        {cust.status}
-                      </span>
+                      {cust.status === 'ລໍຖ້າກວດສອບ' ? (
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '5px 12px',
+                            borderRadius: '9999px',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                            background: 'rgba(245, 158, 11, 0.2)',
+                            color: '#fbbf24',
+                            border: '1px solid rgba(245, 158, 11, 0.45)',
+                            boxShadow: '0 0 10px rgba(245, 158, 11, 0.25)'
+                          }}
+                        >
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fbbf24', display: 'inline-block' }}></span>
+                          ລໍຖ້າກວດສອບ
+                        </span>
+                      ) : (
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '5px 14px',
+                            borderRadius: '9999px',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            background: isApproved ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.12)',
+                            color: isApproved ? '#34d399' : '#e2e8f0',
+                            border: `1px solid ${isApproved ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.15)'}`
+                          }}
+                        >
+                          {cust.status}
+                        </span>
+                      )}
                     </td>
 
                     {/* 2. ໂປຣໄຟລ໌ */}
